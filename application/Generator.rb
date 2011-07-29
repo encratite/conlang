@@ -34,12 +34,16 @@ module Generator
     'k',
     'p',
     't',
+    #Bad contrast with k
+    #'q',
   ]
 
   VoicedPlosives = [
     'g',
     'b',
     'd',
+    #Bad contrast with g
+    #'G',
   ]
 
   Approximants = [
@@ -54,12 +58,29 @@ module Generator
     'f',
     's',
     'S',
+    'x',
+    #Bad contrast with f
+    #'F',
+    #Bad contrast with x
+    #'X',
+    #'K',
+    #Bad contrast with s\
+    #'s`',
+    #Bad contrast with s`
+    #'s\\'
   ]
 
   VoicedFricatives = [
     'v',
     'z',
     'Z',
+    'G',
+    #Bad contrast with v
+    #'B',
+    #Bad contrast with z\
+    #'z`',
+    #Bad contrast with z`
+    #'z\\',
   ]
 
   Taps = [
@@ -71,11 +92,14 @@ module Generator
   ]
 
   InitialComposites = [
-    'tS',
     'ts',
-
-    'dZ',
     'dz',
+    'tS',
+    'dZ',
+    #'t`s`',
+    #'d`z`',
+    #'ts\\',
+    #'dz\\',
   ]
 
   VowelCluster = Vowels + Diphthongs
@@ -84,12 +108,12 @@ module Generator
   InitialFricatives = InitialVoicelessFricatives
   FinalFricatives = FinalVoicelessFricatives + VoicedFricatives
 
-  InitialConsonants = Plosives + InitialFricatives + Taps + Stops + InitialComposites
-  FinalConsonants = Nasals + Approximants + FinalFricatives
+  InitialConsonants = Plosives + Approximants + InitialFricatives + Taps + Stops + InitialComposites
+  FinalConsonants = Nasals + FinalFricatives
 
   Words = [
     InitialConsonants * VowelCluster,
-    InitialConsonants * VowelCluster * FinalConsonants,
+    InitialConsonants * Vowels * FinalConsonants,
   ]
 
   def self.totalWordCount
@@ -130,7 +154,7 @@ module Generator
   def self.noise(words = 8)
     generatedWords = []
     scale = Nil::RandomScale.new
-    weights = [6, 2, 1]
+    weights = [3, 1]
     Words.size.times do |i|
       scale.add(i, weights[i])
     end
