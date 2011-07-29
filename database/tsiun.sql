@@ -7,11 +7,11 @@ create table lexicon
         function_name text unique not null,
         argument_count integer not null,
         word text unique not null,
-        is_alias boolean not null,
         description text not null,
-        --NULL if is_alias is false
+        --NULL if it's not an alias
         alias_definition text,
         group_name text not null,
+        time_added timestamp not null,
 
         constraint argument_count_counstraint check (argument_count >= 0)
 );

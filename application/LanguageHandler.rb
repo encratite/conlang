@@ -39,6 +39,8 @@ class LanguageHandler < BaseHandler
     addHandler(addWordHandler)
     @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
     addHandler(@submitWordHandler)
+    viewWordsHandler = WWWLib::RequestHandler.handler('viewWords', method(:viewWords))
+    addHandler(viewWordsHandler)
   end
 
   def lexicon
@@ -97,19 +99,18 @@ class LanguageHandler < BaseHandler
     if form.function.empty?
       submissionError 'You have not specified a function name.'
     end
-    isAlias = form.type == :newAlias
     aliasDefinition = nil
-    if isAlias
+    if form.type == :newAlias
       aliasDefinition = form.alias
     end
     data = {
       function_name: form.function,
       argument_count: argumentCount,
       word: word,
-      is_alias: isAlias,
       description: form.description,
-      alias_definition: aliasDefinion,
+      alias_definition: aliasDefinition,
       group_name: form.group,
+      time_added: Time.now.utc,
     }
     lexicon.insert(data)
   end
@@ -125,6 +126,13 @@ class LanguageHandler < BaseHandler
       title = 'Submission error'
       output = renderSubmissionError(error.message)
     end
+    return @generator.get(output, request, title)
+  end
+
+  def viewWords(request)
+    words = lexicon.order(:function_name).all
+    title = 'Lexicon'
+    output = renderWords(words)
     return @generator.get(output, request, title)
   end
 end
