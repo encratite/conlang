@@ -51,6 +51,7 @@ class LanguageHandler < BaseHandler
       writer.text('Alias', WordForm::Alias)
       writer.textArea('Description', WordForm::Description) {}
       writer.text('Group', WordForm::Group)
+      writer.text('Rank within group (integer, lower number means higher rank)', WordForm::GroupRank)
       writer.submit
     end
     return writer.output

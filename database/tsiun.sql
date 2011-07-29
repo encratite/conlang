@@ -8,9 +8,11 @@ create table lexicon
         argument_count integer not null,
         word text unique not null,
         description text not null,
-        --NULL if it's not an alias
+        --null if it's not an alias
         alias_definition text,
         group_name text not null,
+        --null if not ordered
+        group_rank integer,
         time_added timestamp not null,
 
         constraint argument_count_counstraint check (argument_count >= 0)

@@ -19,6 +19,7 @@ class LanguageHandler < BaseHandler
     Description = 'description'
     Alias = 'alias'
     Group = 'group'
+    GroupRank = 'rank'
   end
 
   class SubmissionError < Exception
@@ -103,6 +104,12 @@ class LanguageHandler < BaseHandler
     if form.type == :newAlias
       aliasDefinition = form.alias
     end
+    rank = form.groupRank
+    if rank.empty?
+      rank = nil
+    else
+      rank = rank.to_i
+    end
     data = {
       function_name: form.function,
       argument_count: argumentCount,
@@ -110,6 +117,7 @@ class LanguageHandler < BaseHandler
       description: form.description,
       alias_definition: aliasDefinition,
       group_name: form.group,
+      group_rank: rank,
       time_added: Time.now.utc,
     }
     lexicon.insert(data)

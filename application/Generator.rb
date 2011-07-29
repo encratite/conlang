@@ -43,7 +43,7 @@ module Generator
     'b',
     'd',
     #Bad contrast with g
-    #'G',
+    #'G\\',
   ]
 
   Approximants = [
@@ -52,6 +52,7 @@ module Generator
 
   InitialVoicelessFricatives = [
     'h',
+    'K',
   ]
 
   FinalVoicelessFricatives = [
@@ -63,7 +64,6 @@ module Generator
     #'F',
     #Bad contrast with x
     #'X',
-    #'K',
     #Bad contrast with s\
     #'s`',
     #Bad contrast with s`
