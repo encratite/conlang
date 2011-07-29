@@ -58,5 +58,14 @@ class LanguageHandler < BaseHandler
     writer.p do
       'A new entry has been created.'
     end
+    return writer.output
+  end
+
+  def renderSubmissionError(message)
+    writer = getWriter
+    writer.p do
+      message
+    end
+    return writer.output
   end
 end

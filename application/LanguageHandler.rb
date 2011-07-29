@@ -55,10 +55,10 @@ class LanguageHandler < BaseHandler
   end
 
   def wordIsUsed(word)
-    return lexicon.where(word: form.word).count > 0
+    return lexicon.where(word: word).count > 0
   end
 
-  def submitWord(request)
+  def processWordSubmission(request)
     form = WordForm.new(request)
     if form.error
       argumentError
@@ -86,6 +86,7 @@ class LanguageHandler < BaseHandler
       end
       word = unusedWords[rand(unusedWords.size)]
     else
+      word = form.word
       if wordIsUsed(word)
         submissionError 'The word you have specified is already taken.'
       end
@@ -111,7 +112,19 @@ class LanguageHandler < BaseHandler
       group_name: form.group,
     }
     lexicon.insert(data)
-    title = 'New word added'
-    return @generator.get(renderSubmissionConfirmation, request, title)
+  end
+
+  def submitWord(request)
+    title = nil
+    output = nil
+    begin
+      processWordSubmission(request)
+      title = 'New word added'
+      output = renderSubmissionConfirmation
+    rescue SubmissionError => error
+      title = 'Submission error'
+      output = renderSubmissionError(error.message)
+    end
+    return @generator.get(output, request, title)
   end
 end
