@@ -1,7 +1,7 @@
 *
 {
-    font-family: "Times New Roman", serif;
-    font-size: large;
+    font-family: "Georgia", serif;
+    font-size: medium;
     margin: 0;
     padding: 0;
 }
@@ -50,6 +50,10 @@ td
     border: 1px solid black;
 }
 
+ul
+{
+}
+
 li
 {
     list-style-type: none;
@@ -61,9 +65,15 @@ textarea
     height: 5em;
 }
 
-select
+textarea, input, select
 {
-    width: 10em;
+    width: 20em;
+    margin-bottom: 1em;
+}
+
+input.submit
+{
+    width: auto;
 }
 
 p
@@ -71,23 +81,7 @@ p
     margin-bottom: 1em;
 }
 
-p.outputDescription
-{
-    font-weight: bold;
-}
-
-ul.output
-{
-    margin: 0 0 2em 2em;
-}
-
 div.container
 {
     margin: 2em 0 0 2em;
-}
-
-img#ipa
-{
-    width: 20em;
-    margin-bottom: 2em;
 }

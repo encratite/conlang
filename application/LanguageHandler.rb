@@ -2,17 +2,21 @@ require 'nil/string'
 
 require 'www-library/BaseHandler'
 require 'www-library/RequestHandler'
+require 'www-library/Forms'
 
 require 'visual/LanguageHandler'
 
 class LanguageHandler < WWWLib::BaseHandler
-  FunctionField = 'function'
-  ArgumentCountField = 'argumentCount'
-  GeneratePronunciationField = 'generatePronunciation'
-  PronunciationField = 'pronunciation'
-  TypeField = 'type'
-  DescriptionField = 'description'
-  AliasField = 'alias'
+  class WordForm < WWWLib::Forms
+    Function = 'function'
+    ArgumentCount = 'argumentCount'
+    GenerateWord = 'generateWord'
+    Word = 'word'
+    Type = 'type'
+    Description = 'description'
+    Alias = 'alias'
+    Group = 'group'
+  end
 
   NewFunction = 'newFunction'
   NewAlias = 'newAlias'
@@ -26,8 +30,9 @@ class LanguageHandler < WWWLib::BaseHandler
 
   def installHandlers
     addWordHandler = WWWLib::RequestHandler.handler('addWord', method(:addWord))
-    @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
     addHandler(addWordHandler)
+    @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
+    addHandler(@submitWordHandler)
   end
 
   def addWord(request)
@@ -36,6 +41,15 @@ class LanguageHandler < WWWLib::BaseHandler
   end
 
   def submitWord(request)
-
+    form = WordForm.new(request)
+    if form.error
+      argumentError
+    end
+    argumentCount = form.argumentCount.to_i
+    generateWord = form.generateWord.to_i == 1
+    if ![NewFunction, NewAlias].include?(form.type)
+      argumentError
+    end
+    
   end
 end
