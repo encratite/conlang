@@ -1,7 +1,15 @@
-require 'www-library/BaseHandler'
 require 'www-library/HTMLWriter'
 
-class LanguageHandler < WWWLib::BaseHandler
+require 'application/BaseHandler'
+require 'application/Generator'
+
+class LanguageHandler < BaseHandler
+  def mapToOptions(map)
+    return map.map do |description, value|
+      WWWLib::SelectOption.new(description, value.to_s)
+    end
+  end
+
   def renderAddWordForm
     writer = getWriter
     writer.form(@submitWordHandler.getPath) do
@@ -15,29 +23,40 @@ class LanguageHandler < WWWLib::BaseHandler
       writer.withLabel('Argument count for this function') do
         writer.select(WordForm::ArgumentCount, options)
       end
-      options = {
+      options = mapToOptions(
         'Generate word automatically' => 0,
         'Specify X-SAMPA manually' => 1,
-      }.map do |description, value|
-        WWWLib::SelectOption.new(description, value.to_s)
-      end
+      )
       writer.withLabel('Word generation') do
         writer.select(WordForm::GenerateWord, options)
       end
+      options = []
+      Generator::Words.size.times do |i|
+        options << WWWLib::SelectOption.new("Class #{i + 1}", i.to_s)
+      end
+      writer.withLabel('Automatic word generation priority class') do
+        writer.select(WordForm::Priority, options)
+      end
       writer.text('Specify word manually', WordForm::Word)
-      options = {
+      options = mapToOptions(
         'Regular new function entry' => NewFunction,
         'Functional alias' => NewAlias,
-      }.map do |description, field|
-        WWWLib::SelectOption.new(description, field)
-      end
+      )
       writer.withLabel('Type of entry') do
         writer.select(WordForm::Type, options)
       end
       writer.text('Alias', WordForm::Alias)
       writer.textArea('Description', WordForm::Description) {}
+      writer.text('Group', WordForm::Group)
       writer.submit
     end
     return writer.output
+  end
+
+  def renderSubmissionConfirmation
+    writer = getWriter
+    writer.p do
+      'A new entry has been created.'
+    end
   end
 end

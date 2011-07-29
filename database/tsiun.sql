@@ -8,8 +8,7 @@ create table lexicon
         argument_count integer not null,
         word text unique not null,
         is_alias boolean not null,
-        --NULL if is_alias is true
-        description text,
+        description text not null,
         --NULL if is_alias is false
         alias_definition text,
         group_name text not null,
