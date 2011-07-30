@@ -1,29 +1,15 @@
-# -*- coding: utf-8 -*-
 require 'nil/string'
 
-require 'www-library/FormFields'
 require 'www-library/HTTPReply'
 require 'www-library/RequestHandler'
 
 require 'application/BaseHandler'
 require 'application/Generator'
+require 'application/WordFormContents'
 
 require 'visual/LanguageHandler'
 
 class LanguageHandler < BaseHandler
-  class WordForm < WWWLib::FormFields
-    Function = 'function'
-    ArgumentCount = 'argumentCount'
-    GenerateWord = 'generateWord'
-    Priority = 'priority'
-    Word = 'word'
-    Type = 'type'
-    Description = 'description'
-    Alias = 'alias'
-    Group = 'group'
-    GroupRank = 'rank'
-  end
-
   class SubmissionError < Exception
   end
 
@@ -40,12 +26,14 @@ class LanguageHandler < BaseHandler
   def installHandlers
     WWWLib::RequestHandler.newBufferedObjectsGroup
 
-    addWordHandler = WWWLib::RequestHandler.menu('Add a new [wəːd]', 'addWord', method(:addWord), nil, method(:isPrivileged))
+    addWordHandler = WWWLib::RequestHandler.menu('Add word', 'addWord', method(:addWord), nil, method(:isPrivileged))
+    @editWordHandler = WWWLib::RequestHandler.handler('editWord', method(:editWord), 1)
     @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
-    @viewWordsHandler = WWWLib::RequestHandler.menu('View [ˈlɛksɪkən]', 'viewWords', method(:viewWords))
+    @viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
     @deleteWordHandler = WWWLib::RequestHandler.handler('deleteWord', method(:deleteWord), 1)
     @regenerateWordHandler = WWWLib::RequestHandler.handler('regenerateWord', method(:regenerateWord), 1)
     @viewGroupHandler = WWWLib::RequestHandler.handler('viewGroup', method(:viewGroup), 1)
+    @submitEditedWordHandler = WWWLib::RequestHandler.handler('submitEditedWord', method(:submitEditedWord))
 
     WWWLib::RequestHandler.getBufferedObjects.each do |handler|
       addHandler(handler)
@@ -57,8 +45,24 @@ class LanguageHandler < BaseHandler
   end
 
   def addWord(request)
+    privilegeCheck(request)
     title = 'Add a new word'
-    return @generator.get(renderAddWordForm, request, title)
+    output = renderAddWordForm(@submitWordHandler)
+    return @generator.get(output, request, title)
+  end
+
+  def editWord(request)
+    privilegeCheck(request)
+    id = request.arguments.first.to_i
+    result = lexicon.where(id: id).all
+    if result.empty?
+      argumentError
+    end
+    row = result.first
+    wordFormContents = WordFormContents.new(row)
+    title = "Edit \"#{wordFormContents.function}\""
+    output = renderWordForm(@submitEditedWordHandler, wordFormContents)
+    return @generator.get(output, request, title)
   end
 
   def submissionError(text)
@@ -81,7 +85,7 @@ class LanguageHandler < BaseHandler
     return word
   end
 
-  def processWordSubmission(request)
+  def processWordSubmission(request, editing = false)
     form = WordForm.new(request)
     if form.error
       argumentError
@@ -97,7 +101,7 @@ class LanguageHandler < BaseHandler
     end
     @database.transaction do
       type = form.type.to_sym
-      if lexicon.where(function_name: form.function).count > 0
+      if !editing && lexicon.where(function_name: form.function).count > 0
         submissionError 'This function name is already taken.'
       end
       if doGenerateWord
@@ -107,7 +111,7 @@ class LanguageHandler < BaseHandler
         end
       else
         word = form.word
-        if wordIsUsed(word)
+        if !editing && wordIsUsed(word)
           submissionError 'The word you have specified is already taken.'
         end
       end
@@ -135,9 +139,17 @@ class LanguageHandler < BaseHandler
         alias_definition: aliasDefinition,
         group_name: form.group,
         group_rank: rank,
-        time_added: Time.now.utc,
       }
-      lexicon.insert(data)
+      if editing
+        editId = form.id.to_i
+        if lexicon.where(id: editId).count == 0
+          submissionError 'Invalid word ID.'
+        end
+        lexicon.where(id: editId).update(data)
+      else
+        data[:time_added] = Time.now.utc,
+        lexicon.insert(data)
+      end
     end
   end
 
@@ -147,11 +159,22 @@ class LanguageHandler < BaseHandler
     output = nil
     begin
       processWordSubmission(request)
-      title = 'New word added'
-      output = renderSubmissionConfirmation
+      title, output = renderSubmissionConfirmation
     rescue SubmissionError => error
-      title = 'Submission error'
-      output = renderSubmissionError(error.message)
+      title, output = renderSubmissionError(error.message)
+    end
+    return @generator.get(output, request, title)
+  end
+
+  def submitEditedWord(request)
+    privilegeCheck(request)
+    title = nil
+    output = nil
+    begin
+      processWordSubmission(request, true)
+      title, output = renderSubmissionConfirmation(true)
+    rescue SubmissionError => error
+      title, output = renderSubmissionError(error.message)
     end
     return @generator.get(output, request, title)
   end

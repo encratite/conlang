@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+require 'nil/time'
+
+require 'XSAMPA'
+
 require 'www-library/HTMLWriter'
 
 require 'application/BaseHandler'
 require 'application/Generator'
-
-require 'nil/time'
-
-require 'XSAMPA'
+require 'application/WordForm'
 
 class LanguageHandler < BaseHandler
   ArgumentLetters = {
@@ -19,17 +20,24 @@ class LanguageHandler < BaseHandler
 
   def mapToOptions(map)
     return map.map do |description, value|
-      WWWLib::SelectOption.new(description, value.to_s)
+      selected = false
+      if value.class == Array
+        value, selected = value
+      end
+      WWWLib::SelectOption.new(description, value.to_s, selected)
     end
   end
 
-  def renderAddWordForm
+  def renderWordForm(submissionHandler, wordFormContents = nil)
     writer = getWriter
-    writer.form(@submitWordHandler.getPath) do
-      writer.text('Name of the function', WordForm::Function)
+    writer.form(submissionHandler.getPath) do
+      writer.text('Name of the function', WordForm::Function, wordFormContents == nil ? nil : wordFormContents.function)
       counter = 0
       options = ArgumentCountDescriptions.map do |description|
         option = WWWLib::SelectOption.new(description, counter.to_s)
+        if wordFormContents != nil && counter == wordFormContents.argumentCount
+          option.selected = true
+        end
         counter += 1
         option
       end
@@ -38,7 +46,7 @@ class LanguageHandler < BaseHandler
       end
       options = mapToOptions(
         'Generate word automatically' => 1,
-        'Specify X-SAMPA manually' => 0,
+        'Specify X-SAMPA manually' => [0, wordFormContents != nil],
       )
       writer.withLabel('Word generation') do
         writer.select(WordForm::GenerateWord, options)
@@ -50,37 +58,53 @@ class LanguageHandler < BaseHandler
       writer.withLabel('Automatic word generation priority class') do
         writer.select(WordForm::Priority, options)
       end
-      writer.text('Specify word manually', WordForm::Word)
+      writer.text('Specify word manually', WordForm::Word, wordFormContents == nil ? nil : wordFormContents.word)
       options = mapToOptions(
         'Regular new function entry' => NewFunction,
         'Functional alias' => NewAlias,
       )
+      if wordFormContents != nil
+        isAlias = wordFormContents.aliasDefinition != nil
+        options[0].selected = !isAlias
+        options[1].selected = isAlias
+      end
       writer.withLabel('Type of entry') do
         writer.select(WordForm::Type, options)
       end
-      writer.text('Alias', WordForm::Alias)
-      writer.textArea('Description', WordForm::Description) {}
-      writer.text('Group', WordForm::Group)
-      writer.text('Rank within group (integer, lower number means higher rank)', WordForm::GroupRank)
+      writer.text('Alias', WordForm::Alias, wordFormContents == nil ? nil : wordFormContents.aliasDefinition)
+      writer.textArea('Description', WordForm::Description,  wordFormContents == nil ? nil : wordFormContents.description)
+      writer.text('Group', WordForm::Group, wordFormContents == nil ? nil : wordFormContents.group)
+      writer.text('Rank within group (integer, lower number means higher rank)', WordForm::GroupRank, wordFormContents == nil ? nil : wordFormContents.rank)
+      writer.hidden(WordForm::Id, wordFormContents == nil ? nil : wordFormContents.id)
       writer.submit
     end
     return writer.output
   end
 
-  def renderSubmissionConfirmation
+  def renderSubmissionConfirmation(editing = false)
+    if editing
+      title = 'Word edited'
+    else
+      title = 'New word added'
+    end
     writer = getWriter
     writer.p do
-      'A new entry has been created.'
+      if editing
+        'The word has been updated.'
+      else
+        'A new entry has been created.'
+      end
     end
-    return writer.output
+    return [title, writer.output]
   end
 
   def renderSubmissionError(message)
+    title = 'Submission error'
     writer = getWriter
     writer.p do
       message
     end
-    return writer.output
+    return [title, writer.output]
   end
 
   def replaceArgumentLetters(input)
@@ -218,8 +242,9 @@ class LanguageHandler < BaseHandler
           if privileged
             writer.td do
               actions = {
-                'Delete' => [@deleteWordHandler, false],
+                'Edit' => [@editWordHandler, false],
                 'Regenerate' => [@regenerateWordHandler, true],
+                'Delete' => [@deleteWordHandler, false],
               }
               first = true
               id = word[:id].to_s
