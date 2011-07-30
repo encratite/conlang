@@ -2,7 +2,7 @@ require 'www-library/SiteGenerator'
 require 'www-library/HTMLWriter'
 require 'www-library/string'
 
-class TsiunSiteGenerator < WWWLib::SiteGenerator
+class TsunSiteGenerator < WWWLib::SiteGenerator
   def render(request, content)
     writer = WWWLib::HTMLWriter.new
     writer.div(class: 'container') do

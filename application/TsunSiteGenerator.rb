@@ -1,9 +1,9 @@
-require 'visual/TsiunSiteGenerator'
+require 'visual/TsunSiteGenerator'
 
 require 'www-library/SiteGenerator'
 
-class TsiunSiteGenerator < WWWLib::SiteGenerator
-  Name = 'Tsiun'
+class TsunSiteGenerator < WWWLib::SiteGenerator
+  Name = 'Tsun'
 
   def initialize(site, manager)
     super(manager)

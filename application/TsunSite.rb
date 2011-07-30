@@ -1,14 +1,14 @@
 require 'www-library/BaseSite'
 
-require 'application/TsiunSiteGenerator'
+require 'application/TsunSiteGenerator'
 
 require 'sequel'
 
-class TsiunSite < WWWLib::BaseSite
+class TsunSite < WWWLib::BaseSite
   attr_reader :database
 
   def initialize(configuration)
-    super('tsiun', TsiunSiteGenerator)
+    super('tsun', TsunSiteGenerator)
     databaseConfiguration = configuration::Database
     @database =
       Sequel.connect(
