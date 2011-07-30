@@ -117,7 +117,7 @@ span.function
     font-family: "Courier New", monospace;
 }
 
-span.ipa
+span.ipa, span.priority0, span.priority1
 {
     font-family: "Times New Roman", serif;
     font-weight: bold;
@@ -139,5 +139,5 @@ td
 
 table.lexicon
 {
-    margin-bottom: 5em;
+    margin: 2em 0 5em 0;
 }

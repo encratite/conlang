@@ -94,6 +94,9 @@ class LanguageHandler < BaseHandler
   def renderWords(request, words)
     privileged = isPrivileged(request)
     writer = getWriter
+    writer.p do
+      "Number of words in the database: #{lexicon.count}"
+    end
     writer.table(class: 'lexicon') do
       writer.tr do
         descriptions = [

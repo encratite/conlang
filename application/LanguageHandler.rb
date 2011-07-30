@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'nil/string'
 
 require 'www-library/FormFields'
@@ -39,9 +40,9 @@ class LanguageHandler < BaseHandler
   def installHandlers
     WWWLib::RequestHandler.newBufferedObjectsGroup
 
-    addWordHandler = WWWLib::RequestHandler.menu('Add a new word', 'addWord', method(:addWord), nil, method(:isPrivileged))
+    addWordHandler = WWWLib::RequestHandler.menu('Add a new [wəːd]', 'addWord', method(:addWord), nil, method(:isPrivileged))
     @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
-    @viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
+    @viewWordsHandler = WWWLib::RequestHandler.menu('View [ˈlɛksɪkən]', 'viewWords', method(:viewWords))
     @deleteWordHandler = WWWLib::RequestHandler.handler('deleteWord', method(:deleteWord), 1)
     @regenerateWordHandler = WWWLib::RequestHandler.handler('regenerateWord', method(:regenerateWord), 1)
     @viewGroupHandler = WWWLib::RequestHandler.handler('viewGroup', method(:viewGroup), 1)
