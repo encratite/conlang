@@ -42,6 +42,8 @@ class LanguageHandler < BaseHandler
     addHandler(@submitWordHandler)
     viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
     addHandler(viewWordsHandler)
+    @deleteWordHandler = WWWLib::RequestHandler.handler('deleteWord', method(:deleteWord), 1)
+    addHandler(@deleteWordHandler)
   end
 
   def lexicon
@@ -143,7 +145,21 @@ class LanguageHandler < BaseHandler
   def viewWords(request)
     words = lexicon.order(:function_name).all
     title = 'Lexicon'
-    output = renderWords(words)
+    output = renderWords(request, words)
     return @generator.get(output, request, title)
+  end
+
+  def deleteWord(request)
+    if !isPrivileged(request)
+      permissionError
+    end
+    id = request.arguments.first.to_i
+    begin
+      lexicon.where(id: id).delete
+    rescue
+      argumentError
+    end
+    title = 'Word deleted'
+    return @generator.get(renderDeletionConfirmation, request, title)
   end
 end

@@ -75,7 +75,8 @@ class LanguageHandler < BaseHandler
     return writer.output
   end
 
-  def renderWords(words)
+  def renderWords(request, words)
+    privileged = isPrivileged(request)
     writer = getWriter
     writer.table(class: 'lexicon') do
       writer.tr do
@@ -86,6 +87,9 @@ class LanguageHandler < BaseHandler
           'Group',
           'Time added',
         ]
+        if privileged
+          descriptions << 'Actions'
+        end
         descriptions.each do |description|
           writer.th do
             description
@@ -140,8 +144,36 @@ class LanguageHandler < BaseHandler
           writer.td do
             word[:time_added].utcString
           end
+          if privileged
+            writer.td do
+              actions = {
+                'Delete' => @deleteWordHandler,
+              }
+              first = true
+              id = word[:id].to_s
+              actions.each do |description, handler|
+                if first
+                  first = false
+                else
+                  writer.write ', '
+                end
+                writer.a(href: handler.getPath(id)) do
+                  description
+                end
+              end
+              nil
+            end
+          end
         end
       end
+    end
+    return writer.output
+  end
+
+  def renderDeletionConfirmation
+    writer = getWriter
+    writer.p do
+      'The word has been deleted.'
     end
     return writer.output
   end
