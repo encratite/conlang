@@ -44,6 +44,7 @@ class LanguageHandler < BaseHandler
     @viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
     @deleteWordHandler = WWWLib::RequestHandler.handler('deleteWord', method(:deleteWord), 1)
     @regenerateWordHandler = WWWLib::RequestHandler.handler('regenerateWord', method(:regenerateWord), 1)
+    @viewGroupHandler = WWWLib::RequestHandler.handler('viewGroup', method(:viewGroup), 1)
 
     WWWLib::RequestHandler.getBufferedObjects.each do |handler|
       addHandler(handler)
@@ -205,7 +206,22 @@ class LanguageHandler < BaseHandler
       end
       lexicon.where(id: id).update(word: newWord)
     end
-    path = "#{@viewWordsHandler.getPath}##{function}"
-    return WWWLib::HTTPReply.localRefer(request, path)
+    puts request.referrer.inspect
+    path = "#{request.referrer}##{function}"
+    return WWWLib::HTTPReply.refer(path)
+  end
+
+  def viewGroup(request)
+    group = request.arguments.first
+    if group.empty?
+      argumentError
+    end
+    words = lexicon.where(group_name: group).order_by(:group_rank).all
+    if words.empty?
+      argumentError
+    end
+    title = "Group \"#{group}\""
+    output = renderWords(request, words)
+    return @generator.get(output, request, title)
   end
 end

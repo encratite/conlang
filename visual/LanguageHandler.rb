@@ -124,7 +124,7 @@ class LanguageHandler < BaseHandler
             end
           end
           writer.td do
-            if description == nil
+            if description.empty?
               writer.p do
                 writer.i { 'No description.' }
               end
@@ -137,6 +137,7 @@ class LanguageHandler < BaseHandler
                   description
                 end
                 examples.each do |example|
+                  writer.p(class: 'examples') { 'Examples:' }
                   writer.p do
                     tokens = example.split(': ')
                     if tokens.size != 2
@@ -175,7 +176,13 @@ class LanguageHandler < BaseHandler
             if group.empty?
               writer.i { 'No group' }
             else
-              group
+              writer.a(href: @viewGroupHandler.getPath(group)) do
+                group
+              end
+              rank = word[:group_rank]
+              if rank != nil
+                writer.write " (#{rank})"
+              end
             end
           end
           writer.td do
