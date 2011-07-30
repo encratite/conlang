@@ -117,3 +117,12 @@ span.ipa
     font-family: "Times New Roman", serif;
     font-weight: bold;
 }
+
+span.priority0
+{
+}
+
+span.priority1
+{
+    color: red;
+}

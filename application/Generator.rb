@@ -1,3 +1,5 @@
+require 'set'
+
 require 'nil/random'
 
 require 'application/Array'
@@ -114,7 +116,7 @@ module Generator
   Words = [
     InitialConsonants * VowelCluster,
     InitialConsonants * Vowels * FinalConsonants,
-  ]
+  ].map { |x| x.to_set }
 
   def self.totalWordCount
     count = 0

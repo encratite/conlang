@@ -111,7 +111,8 @@ class LanguageHandler < BaseHandler
           else
             functionString = function
           end
-          ipa = XSAMPA.toIPA(word[:word])
+          xsampa = word[:word]
+          ipa = XSAMPA.toIPA(xsampa)
           description = word[:description]
           writer.td do
             writer.span(class: 'function', id: function) do
@@ -120,7 +121,14 @@ class LanguageHandler < BaseHandler
           end
           writer.td do
             writer.span(class: 'ipa') do
-              ipa
+              priority = getPriority(xsampa)
+              if priority == nil
+                ipa
+              else
+                writer.span(class: "priority#{priority}") do
+                  ipa
+                end
+              end
             end
           end
           writer.td do

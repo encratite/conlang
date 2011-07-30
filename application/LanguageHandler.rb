@@ -206,7 +206,6 @@ class LanguageHandler < BaseHandler
       end
       lexicon.where(id: id).update(word: newWord)
     end
-    puts request.referrer.inspect
     path = "#{request.referrer}##{function}"
     return WWWLib::HTTPReply.refer(path)
   end
