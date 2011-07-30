@@ -4,6 +4,8 @@ require 'www-library/HTMLWriter'
 require 'application/BaseHandler'
 require 'application/Generator'
 
+require 'nil/time'
+
 require 'XSAMPA'
 
 class LanguageHandler < BaseHandler
@@ -101,21 +103,21 @@ class LanguageHandler < BaseHandler
               argumentLetters << argumentLetters[i]
             end
             argumentString = argumentLetters.join(', ')
-            function = "#{function}(#{argumentString})"
+            functionString = "#{function}(#{argumentString})"
+          else
+            functionString = function
           end
           ipa = XSAMPA.toIPA(word[:word])
-          columns = [
-            function,
-            ipa,
-            word[:description]
-          ]
+          description = word[:description]
           writer.td do
-            writer.span(class: 'function') do
+            writer.span(class: 'function', id: function) do
               function
             end
           end
           writer.td do
-            ipa
+            writer.span(class: 'ipa') do
+              ipa
+            end
           end
           writer.td do
             writer.p do
@@ -127,7 +129,7 @@ class LanguageHandler < BaseHandler
             end
             aliasDefinition = word[:alias_definition]
             if aliasDefinition != nil
-              writer.p do
+              writer.p(class: 'alias') do
                 "Alias: #{aliasDefinition}"
               end
             end
@@ -136,7 +138,7 @@ class LanguageHandler < BaseHandler
             word[:group_name]
           end
           writer.td do
-            word[:time_added].to_s
+            word[:time_added].utcString
           end
         end
       end

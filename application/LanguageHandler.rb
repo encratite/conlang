@@ -36,11 +36,11 @@ class LanguageHandler < BaseHandler
   ]
 
   def installHandlers
-    addWordHandler = WWWLib::RequestHandler.handler('addWord', method(:addWord))
+    addWordHandler = WWWLib::RequestHandler.menu('Add a new word', 'addWord', method(:addWord), nil, method(:isPrivileged))
     addHandler(addWordHandler)
     @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
     addHandler(@submitWordHandler)
-    viewWordsHandler = WWWLib::RequestHandler.handler('viewWords', method(:viewWords))
+    viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
     addHandler(viewWordsHandler)
   end
 
@@ -124,6 +124,9 @@ class LanguageHandler < BaseHandler
   end
 
   def submitWord(request)
+    if !isPrivileged(request)
+      permissionError
+    end
     title = nil
     output = nil
     begin

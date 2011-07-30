@@ -5,10 +5,11 @@ require 'application/TsunSiteGenerator'
 require 'sequel'
 
 class TsunSite < WWWLib::BaseSite
-  attr_reader :database
+  attr_reader :database, :privilegedAddresses
 
   def initialize(configuration)
     super('tsun', TsunSiteGenerator)
+    @privilegedAddresses = configuration::PrivilegedAddresses
     databaseConfiguration = configuration::Database
     @database =
       Sequel.connect(

@@ -1,7 +1,7 @@
 *
 {
     font-family: "Georgia", serif;
-    font-size: medium;
+    font-size: large;
     margin: 0;
     padding: 0;
 }
@@ -48,6 +48,7 @@ td
 {
     padding: 0 0.5em 0 0.5em;
     border: 1px solid black;
+    vertical-align: top;
 }
 
 ul
@@ -76,7 +77,7 @@ input.submit
     width: auto;
 }
 
-p
+p.alias
 {
     margin-bottom: 1em;
 }
@@ -84,4 +85,29 @@ p
 div.container
 {
     margin: 2em 0 0 2em;
+}
+
+ul.menu
+{
+    margin-bottom: 2em;
+    border-collapse: collapse;
+}
+
+ul.menu li
+{
+    display: inline;
+    padding: 0 1em 0 1em;
+    border: 1px black solid;
+    margin: 0;
+}
+
+span.function
+{
+    font-family: "Courier New", monospace;
+}
+
+span.ipa
+{
+    font-family: "Times New Roman", serif;
+    font-weight: bold;
 }

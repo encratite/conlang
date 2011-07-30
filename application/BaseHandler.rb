@@ -5,4 +5,8 @@ class BaseHandler < WWWLib::BaseHandler
     super(site)
     @database = site.database
   end
+
+  def isPrivileged(request)
+    return @site.privilegedAddresses.include?(request.address)
+  end
 end
