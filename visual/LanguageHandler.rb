@@ -147,17 +147,19 @@ class LanguageHandler < BaseHandler
           if privileged
             writer.td do
               actions = {
-                'Delete' => @deleteWordHandler,
+                'Delete' => [@deleteWordHandler, false],
+                'Regenerate' => [@regenerateWordHandler, true],
               }
               first = true
               id = word[:id].to_s
-              actions.each do |description, handler|
+              actions.each do |description, handlerData|
                 if first
                   first = false
                 else
                   writer.write ', '
                 end
-                writer.a(href: handler.getPath(id)) do
+                handler, anchor = handlerData
+                writer.a(href: handler.getPath("#{id}##{function}")) do
                   description
                 end
               end

@@ -36,14 +36,17 @@ class LanguageHandler < BaseHandler
   ]
 
   def installHandlers
+    WWWLib::RequestHandler.newBufferedObjectsGroup
+
     addWordHandler = WWWLib::RequestHandler.menu('Add a new word', 'addWord', method(:addWord), nil, method(:isPrivileged))
-    addHandler(addWordHandler)
     @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
-    addHandler(@submitWordHandler)
     viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
-    addHandler(viewWordsHandler)
     @deleteWordHandler = WWWLib::RequestHandler.handler('deleteWord', method(:deleteWord), 1)
-    addHandler(@deleteWordHandler)
+    @regenerateWordHandler = WWWLib::RequestHandler.handler('regenerateWord', method(:regenerateWord), 1)
+
+    WWWLib::RequestHandler.getBufferedObjects.each do |handler|
+      addHandler(handler)
+    end
   end
 
   def lexicon
@@ -63,6 +66,18 @@ class LanguageHandler < BaseHandler
     return lexicon.where(word: word).count > 0
   end
 
+  def generateWord(priority)
+    usedWords = lexicon.select(:word).all.map { |x| x[0] }
+    unusedWords = Generator::Words[priority].reject do |word|
+      usedWords.include?(word)
+    end
+    if unusedWords.empty?
+      return nil
+    end
+    word = unusedWords[rand(unusedWords.size)]
+    return word
+  end
+
   def processWordSubmission(request)
     form = WordForm.new(request)
     if form.error
@@ -77,58 +92,54 @@ class LanguageHandler < BaseHandler
     if priority < 0 || priority >= Generator::Words.size
       argumentError
     end
-    type = form.type.to_sym
-    if lexicon.where(function_name: form.function).count > 0
-      submissionError 'This function name is already taken.'
-    end
-    if generateWord
-      usedWords = lexicon.select(:word).all.map { |x| x[0] }
-      unusedWords = Generator::Words[priority].reject do |word|
-        usedWords.include?(word)
+    @database.transaction do
+      type = form.type.to_sym
+      if lexicon.where(function_name: form.function).count > 0
+        submissionError 'This function name is already taken.'
       end
-      if unusedWords.empty?
-        submissionError 'There are no unused words left for the specified priority class.'
+      if generateWord
+        word = generateWord(priority)
+        if word == nil
+          submissionError 'There are no unused words left for the specified priority class.'
+        end
+      else
+        word = form.word
+        if wordIsUsed(word)
+          submissionError 'The word you have specified is already taken.'
+        end
       end
-      word = unusedWords[rand(unusedWords.size)]
-    else
-      word = form.word
-      if wordIsUsed(word)
-        submissionError 'The word you have specified is already taken.'
+      if word.empty?
+        submissionError 'You have not specified a word.'
       end
+      if form.function.empty?
+        submissionError 'You have not specified a function name.'
+      end
+      aliasDefinition = nil
+      if form.type == :newAlias
+        aliasDefinition = form.alias
+      end
+      rank = form.groupRank
+      if rank.empty?
+        rank = nil
+      else
+        rank = rank.to_i
+      end
+      data = {
+        function_name: form.function,
+        argument_count: argumentCount,
+        word: word,
+        description: form.description,
+        alias_definition: aliasDefinition,
+        group_name: form.group,
+        group_rank: rank,
+        time_added: Time.now.utc,
+      }
+      lexicon.insert(data)
     end
-    if word.empty?
-      submissionError 'You have not specified a word.'
-    end
-    if form.function.empty?
-      submissionError 'You have not specified a function name.'
-    end
-    aliasDefinition = nil
-    if form.type == :newAlias
-      aliasDefinition = form.alias
-    end
-    rank = form.groupRank
-    if rank.empty?
-      rank = nil
-    else
-      rank = rank.to_i
-    end
-    data = {
-      function_name: form.function,
-      argument_count: argumentCount,
-      word: word,
-      description: form.description,
-      alias_definition: aliasDefinition,
-      group_name: form.group,
-      group_rank: rank,
-      time_added: Time.now.utc,
-    }
-    lexicon.insert(data)
   end
 
   def submitWord(request)
-    if !isPrivileged(request)
-      permissionError
-    end
+    privilegeCheck(request)
     title = nil
     output = nil
     begin
@@ -150,16 +161,48 @@ class LanguageHandler < BaseHandler
   end
 
   def deleteWord(request)
-    if !isPrivileged(request)
-      permissionError
-    end
+    privilegeCheck(request)
     id = request.arguments.first.to_i
     begin
       lexicon.where(id: id).delete
-    rescue
+    rescue Sequel::Error
       argumentError
     end
     title = 'Word deleted'
     return @generator.get(renderDeletionConfirmation, request, title)
+  end
+
+  def getPriority(word)
+    priority = 0
+    Generator::Words.each do |wordClass|
+      if wordClass.include?(word)
+        return priority
+      end
+      priority += 1
+    end
+    return nil
+  end
+
+  def regenerateWord(request)
+    privilegeCheck(request)
+    id = request.arguments.first.to_i
+    @database.transaction do
+      result = lexicon.where(id: id).all
+      if result.empty?
+        argumentError
+      end
+      row = result.first
+      function = row[:function_name]
+      priority = getPriority(row[:word])
+      if priority == nil
+        plainError 'Unable to find the word in the lexicon.'
+      end
+      newWord = generateWord(priority)
+      if newWord == nil
+        plainError 'No space left in this priority class.'
+      end
+      lexicon.where(id: id).update(word: newWord)
+    end
+    return viewWords(request)
   end
 end

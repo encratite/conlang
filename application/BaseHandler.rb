@@ -9,4 +9,10 @@ class BaseHandler < WWWLib::BaseHandler
   def isPrivileged(request)
     return @site.privilegedAddresses.include?(request.address)
   end
+
+  def privilegeCheck(request)
+    if !isPrivileged(request)
+      permissionError
+    end
+  end
 end
