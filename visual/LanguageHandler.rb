@@ -102,11 +102,11 @@ class LanguageHandler < BaseHandler
           function = word[:function_name]
           argumentCount = word[:argument_count]
           if argumentCount > 0
-            argumentLetters = []
-            argumentCount.size.times do |i|
-              argumentLetters << argumentLetters[i]
+            usedLetters = []
+            argumentCount.times do |i|
+              usedLetters << argumentLetters[i]
             end
-            argumentString = argumentLetters.join(', ')
+            argumentString = usedLetters.join(', ')
             functionString = "#{function}(#{argumentString})"
           else
             functionString = function
@@ -115,7 +115,7 @@ class LanguageHandler < BaseHandler
           description = word[:description]
           writer.td do
             writer.span(class: 'function', id: function) do
-              function
+              functionString
             end
           end
           writer.td do
@@ -124,22 +124,59 @@ class LanguageHandler < BaseHandler
             end
           end
           writer.td do
-            writer.p do
-              if description == nil
+            if description == nil
+              writer.p do
                 writer.i { 'No description.' }
+              end
+            else
+              tokens = description.gsub("\r", '').split("\n\n")
+              if tokens.size == 2
+                description = tokens[0]
+                examples = tokens[1].split("\n")
+                writer.p do
+                  description
+                end
+                examples.each do |example|
+                  writer.p do
+                    tokens = example.split(': ')
+                    if tokens.size != 2
+                      writer.b do
+                        'Invalid example.'
+                      end
+                    else
+                      gloss = tokens[0]
+                      translation = tokens[1]
+                      writer.span(class: 'function', newlineType: nil) { gloss }
+                      writer.write ": #{translation}"
+                    end
+                  end
+                end
               else
-                description
+                writer.p do
+                  description
+                end
               end
             end
             aliasDefinition = word[:alias_definition]
             if aliasDefinition != nil
               writer.p(class: 'alias') do
-                "Alias: #{aliasDefinition}"
+                writer.b do
+                  'Alias for:'
+                end
+                writer.write ' '
+                writer.span(class: 'function') do
+                  aliasDefinition
+                end
               end
             end
           end
           writer.td do
-            word[:group_name]
+            group = word[:group_name]
+            if group.empty?
+              writer.i { 'No group' }
+            else
+              group
+            end
           end
           writer.td do
             word[:time_added].utcString
@@ -159,7 +196,7 @@ class LanguageHandler < BaseHandler
                   writer.write ', '
                 end
                 handler, anchor = handlerData
-                writer.a(href: handler.getPath("#{id}##{function}")) do
+                writer.a(href: handler.getPath(id)) do
                   description
                 end
               end

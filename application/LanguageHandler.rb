@@ -84,7 +84,7 @@ class LanguageHandler < BaseHandler
       argumentError
     end
     argumentCount = form.argumentCount.to_i
-    generateWord = form.generateWord.to_i == 1
+    doGenerateWord = form.generateWord.to_i == 1
     if ![NewFunction, NewAlias].include?(form.type)
       argumentError
     end
@@ -97,7 +97,7 @@ class LanguageHandler < BaseHandler
       if lexicon.where(function_name: form.function).count > 0
         submissionError 'This function name is already taken.'
       end
-      if generateWord
+      if doGenerateWord
         word = generateWord(priority)
         if word == nil
           submissionError 'There are no unused words left for the specified priority class.'
@@ -115,7 +115,7 @@ class LanguageHandler < BaseHandler
         submissionError 'You have not specified a function name.'
       end
       aliasDefinition = nil
-      if form.type == :newAlias
+      if form.type.to_sym == :newAlias
         aliasDefinition = form.alias
       end
       rank = form.groupRank
