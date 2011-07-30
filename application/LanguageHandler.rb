@@ -1,7 +1,8 @@
 require 'nil/string'
 
-require 'www-library/RequestHandler'
 require 'www-library/FormFields'
+require 'www-library/HTTPReply'
+require 'www-library/RequestHandler'
 
 require 'application/BaseHandler'
 require 'application/Generator'
@@ -40,7 +41,7 @@ class LanguageHandler < BaseHandler
 
     addWordHandler = WWWLib::RequestHandler.menu('Add a new word', 'addWord', method(:addWord), nil, method(:isPrivileged))
     @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
-    viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
+    @viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
     @deleteWordHandler = WWWLib::RequestHandler.handler('deleteWord', method(:deleteWord), 1)
     @regenerateWordHandler = WWWLib::RequestHandler.handler('regenerateWord', method(:regenerateWord), 1)
 
@@ -186,6 +187,7 @@ class LanguageHandler < BaseHandler
   def regenerateWord(request)
     privilegeCheck(request)
     id = request.arguments.first.to_i
+    function = nil
     @database.transaction do
       result = lexicon.where(id: id).all
       if result.empty?
@@ -203,6 +205,7 @@ class LanguageHandler < BaseHandler
       end
       lexicon.where(id: id).update(word: newWord)
     end
-    return viewWords(request)
+    path = "#{@viewWordsHandler.getPath}##{function}"
+    return WWWLib::HTTPReply.localRefer(request, path)
   end
 end
