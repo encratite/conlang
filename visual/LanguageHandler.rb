@@ -9,6 +9,14 @@ require 'nil/time'
 require 'XSAMPA'
 
 class LanguageHandler < BaseHandler
+  ArgumentLetters = {
+    'α' => 'alpha',
+    'β' => 'beta',
+    'γ' => 'gamma',
+    'δ' => 'delta',
+    'ε' => 'epsilon',
+  }
+
   def mapToOptions(map)
     return map.map do |description, value|
       WWWLib::SelectOption.new(description, value.to_s)
@@ -75,6 +83,14 @@ class LanguageHandler < BaseHandler
     return writer.output
   end
 
+  def replaceArgumentLetters(input)
+    output = input
+    ArgumentLetters.each do |letter, name|
+      output = output.gsub(name, letter)
+    end
+    return output
+  end
+
   def renderWords(request, words)
     privileged = isPrivileged(request)
     writer = getWriter
@@ -96,13 +112,13 @@ class LanguageHandler < BaseHandler
           end
         end
       end
-      argumentLetters = 'αβγδε'
       words.each do |word|
         writer.tr do
           function = word[:function_name]
           argumentCount = word[:argument_count]
           if argumentCount > 0
             usedLetters = []
+            argumentLetters = ArgumentLetters.keys
             argumentCount.times do |i|
               usedLetters << argumentLetters[i]
             end
@@ -142,7 +158,7 @@ class LanguageHandler < BaseHandler
                 description = tokens[0]
                 examples = tokens[1].split("\n")
                 writer.p do
-                  description
+                  replaceArgumentLetters(description)
                 end
                 examples.each do |example|
                   writer.p(class: 'examples') { 'Examples:' }
@@ -162,7 +178,7 @@ class LanguageHandler < BaseHandler
                 end
               else
                 writer.p do
-                  description
+                  replaceArgumentLetters(description)
                 end
               end
             end
@@ -174,7 +190,7 @@ class LanguageHandler < BaseHandler
                 end
                 writer.write ' '
                 writer.span(class: 'function') do
-                  aliasDefinition
+                  replaceArgumentLetters(aliasDefinition)
                 end
               end
             end

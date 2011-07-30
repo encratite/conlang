@@ -77,6 +77,11 @@ input.submit
     width: auto;
 }
 
+p
+{
+    text-align: justify;
+}
+
 p.alias
 {
     margin-top: 0.5em;
@@ -125,4 +130,14 @@ span.priority0
 span.priority1
 {
     color: red;
+}
+
+td
+{
+    max-width: 25em;
+}
+
+table.lexicon
+{
+    margin-bottom: 5em;
 }
