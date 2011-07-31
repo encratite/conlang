@@ -2,7 +2,7 @@ class Translator
   class Error < Exception
   end
 
-  class Word
+  class Function
     attr_reader :function, :word, :argumentCount
 
     attr_accessor :arguments
@@ -13,11 +13,22 @@ class Translator
       @argumentCount = row[:argument_count]
       @arguments = []
     end
+
+    def serialise
+      output = @word
+      if @arguments.size != @argumentCount
+        raise Error.new("Invalid argument count for function #{function}, expected #{@argumentCount}, not #{@arguments.size}")
+      end
+      @arguments.each do |argument|
+        output += " #{argument.serialise}"
+      end
+      return output
+    end
   end
 
   def initialize(lexicon)
-    @words = lexicon.select(:function_name, :word, :argument_count).all.map do |entry|
-      Word.new(entry)
+    @functions = lexicon.select(:function_name, :word, :argument_count).all.map do |entry|
+      Function.new(entry)
     end
   end
 
@@ -32,8 +43,8 @@ class Translator
     return [name, remainingString]
   end
 
-  def getWord(function)
-    @words.each do |word|
+  def getFunction(function)
+    @functions.each do |word|
       if word.function == function
         return word
       end
@@ -63,8 +74,8 @@ class Translator
       return nil
     end
     functionName, input = functionNameData
-    word = getWord(functionName)
-    if word == nil
+    function = getFunction(functionName)
+    if function == nil
       error "Invalid function name: #{functionName}"
     end
     if input.empty?
@@ -87,19 +98,40 @@ class Translator
             break
           when ','
             #argument separator
+            input = skipTrim(input)
           else
             functionalComponentData = translateFunctionalComponent(input)
             if functionalComponentData == nil
               parseError('Expected an argument', input)
             end
-            input, argumentWord = functionalComponentData
-            word.arguments << argumentWord
+            input, argument = functionalComponentData
+            function.arguments << argument
           end
         end
       else
         #nullary
       end
     end
-    return [input, word]
+    return [input, function]
+  end
+
+  def translate(input)
+    output = ''
+    skipCharacters = " .,:;-!?\n\r"
+    while !input.empty?
+      letter = input[0]
+      if skipCharacters.include?(letter)
+        output += letter
+        input = skip(input)
+        next
+      end
+      functionalComponentData = translateFunctionalComponent(input)
+      if functionalComponentData == nil
+        parseError('Expected a function', input)
+      end
+      input, function = functionalComponentData
+      output += function.serialise
+    end
+    return output
   end
 end

@@ -9,6 +9,5 @@ input = ARGV.first
 
 database = getDatabase(Configuration::Database)
 translator = Translator.new(database[:lexicon])
-output = translator.translateFunctionalComponent(input)
-
-puts output.inspect
+output = translator.translate(input)
+puts output
