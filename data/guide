@@ -168,3 +168,30 @@ Here is an overview of the consonants:
 [column ]
 ]
 ]
+
+[section Syllable structure]
+
+Syllables consist of an initial consonant, followed by a vowel or a diphthong and an optional final consonant.
+The pattern is designed to form a [italic self-segregating morphology] so you can easily determine syllable boundaries (even though it is monosyllabic).
+
+[list
+[item Initial consonants: plosives, approximants, initial fricatives, taps, stops, affricates]
+[item Vowel cluster: vowel, diphthong]
+[item Optional final consonant: nasals, final fricatives]
+]
+
+The initial fricatives are [ipa h] and [ipa K], the final fricatives are the remaining ones.
+I put the [ipa h] at the beginning because it seems like a weak choice for a final and does not occur in that position in many languages, while it is still a very popular phoneme overall.
+While [ipa K] is a candidate for a final, I consider it related to [ipa l] and would like to keep them in the same position.
+In an older version of the phonology [ipa l] actually used to be a final, but I gave up on that.
+
+This results in the following phonemes:
+
+[list
+[item Initial consonants: k, p, t, g, b, d, l, h, [xsampa K], [xsampa 4], [xsampa ?], ts, dz, [xsampa tS], [xsampa dZ] (15 possibilities)]
+[item Vowel cluster: i, a, u, [xsampa E], e, [xsampa O], o, [xsampa @], y, ia, iu, ai, au, ui, ua (15 possibilities)]
+[item Optional final consonant: n, [xsampa N], m, f, s, [xsampa S], x, v, z, [xsampa Z], [xsampa G] (11 possibilities)]
+]
+
+This results in 225 short syllables, 1485 long ones and hence a total word count of up to 1710.
+The short syllables are used for more important frequently used words while the long ones form the majority of the lexicon.
