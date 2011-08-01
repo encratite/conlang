@@ -1,0 +1,170 @@
+[section Introduction]
+
+[bold Tsun] is an artistic constructed language that was created for the purpose of writing lyrics and poetry.
+It is a highly [italic analytic language] (as opposed to synthetic) that features no inflections whatsoever.
+Each word matches one out of two possible simple consonant/vowel patterns, both of which are only one syllable.
+This makes [bold Tsun] a [italic monosyllabic language].
+However, unlike all natural monosyllabic languages it is [italic atonal] so the lexicon is actually quite limited and would require phonological modifications or multi-syllable words to support more than 1710 words.
+
+I doubt that I am ever going to hit that limit, though, so it is not a problem at this point.
+
+[section Phonology]
+
+The primary goal was to find a balance between phonological simplicity and the maximum number of words supported by the syllable patterns.
+I tried to pick phonemes based on their popularity in the UPSID data to have a solid basis in naturally occurring frequencies and contrasts.
+
+While tonality is an interesting feature and very much suited for a monosyllabic language it is difficult to realise for the type of music it was developed for.
+Black metal and death metal primarily rely on high pitched/low pitched growls which are not easy to apply tonality to.
+
+[bold Tsun] has 9 vowels and 26 consonants, 4 of which are affricates.
+It also features 6 diphthongs, all of which are composed of two of the regular single vowels.
+The length of the vowels is not important.
+Here is an overview of the basic vowels:
+
+[table
+[row
+[column ]
+[column Front - unrounded]
+[column Front - rounded]
+[column Central]
+[column Back]
+]
+[row
+[column Close]
+[column i]
+[column y]
+[column ]
+[column u]
+]
+[column Close-mid]
+[column e]
+[column ]
+[column ]
+[column o]
+]
+[row
+[column Mid]
+[column ]
+[column ]
+[column [xsampa @]]
+[column ]
+]
+[row
+[column Open-mid]
+[column [xsampa E]]
+[column ]
+[column ]
+[column [xsampa O]]
+]
+[row
+[column Open]
+[column a]
+[column ]
+[column ]
+[column ]
+]
+]
+
+This set of vowels was somewhat inspired by the phonology of [italic Standard Tibetan], so while the contrasts might seem poor, they do exist in a similar fashion in some natural languages.
+I wish I could have used a more reduced set of vowels, 9 is quite a bit.
+It was necessary to get a sufficient number of possible syllables to make the upper limit for the size of the lexicon more tolerable.
+
+The 6 diphthongs are:
+
+[list
+[item ia]
+[item iu]
+[item ai]
+[item au]
+[item ui]
+[item ua]
+]
+
+They are necessary to increase the number of combinations.
+I tried to keep them simple, though.
+The contrasts on these is considerable and should make it easy enough to identify them by sound.
+The initial [ipa i] and the [ipa u] in these forced me to get rid of the approximants [ipa j] and [ipa w].
+
+Here is an overview of the consonants:
+
+[table
+[row
+[column ]
+[column Bilabial]
+[column Labiodental]
+[column Alveolar]
+[column Postalveolar]
+[column Palatal]
+[column Velar]
+[column Glottal]
+]
+[row
+[column Nasal]
+[column m]
+[column ]
+[column n]
+[column ]
+[column ]
+[column [xsampa N]]
+[column ]
+]
+[row
+[column Plosive]
+[column p b]
+[column ]
+[column t d]
+[column ]
+[column ]
+[column k g]
+[column [xsampa ?]]
+]
+[row
+[column Affricate]
+[column ]
+[column ]
+[column ts dz]
+[column [xsampa tS] [xsampa dZ]]
+[column ]
+[column ]
+[column ]
+]
+[row
+[column Fricative]
+[column ]
+[column f v]
+[column s z]
+[column [xsampa S] [xsampa Z]]
+[column ]
+[column x [xsampa G]]
+[column h]
+]
+[row
+[column Approximant]
+[column ]
+[column ]
+[column l]
+[column ]
+[column ]
+[column ]
+[column ]
+]
+[row
+[column Tap]
+[column ]
+[column ]
+[column [xsampa 4]]
+[column ]
+[column ]
+[column ]
+[column ]
+]
+[column Lateral fricative]
+[column ]
+[column ]
+[column [xsampa K]]
+[column ]
+[column ]
+[column ]
+[column ]
+]
+]
