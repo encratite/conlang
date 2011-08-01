@@ -1,3 +1,5 @@
+require 'XSAMPA'
+
 class Translator
   class Error < Exception
   end
@@ -17,7 +19,7 @@ class Translator
     def serialise
       output = @word
       if @arguments.size != @argumentCount
-        raise Error.new("Invalid argument count for function #{function}, expected #{@argumentCount}, not #{@arguments.size}")
+        raise Error.new("Invalid argument count for function \"#{function}\", expected #{@argumentCount}, not #{@arguments.size}")
       end
       @arguments.each do |argument|
         output += " #{argument.serialise}"
@@ -116,12 +118,14 @@ class Translator
   end
 
   def translate(input)
-    output = ''
+    xsampaOutput = ''
+    ipaOutput = ''
     skipCharacters = " .,:;-!?\n\r"
     while !input.empty?
       letter = input[0]
       if skipCharacters.include?(letter)
-        output += letter
+        xsampaOutput += letter
+        ipaOutput += letter
         input = skip(input)
         next
       end
@@ -130,8 +134,10 @@ class Translator
         parseError('Expected a function', input)
       end
       input, function = functionalComponentData
-      output += function.serialise
+      serialised = function.serialise
+      xsampaOutput += serialised
+      ipaOutput += XSAMPA.toIPA(serialised)
     end
-    return output
+    return xsampaOutput, ipaOutput
   end
 end

@@ -112,7 +112,7 @@ ul.menu li
     margin: 0;
 }
 
-span.function
+span.function, span.xsampa
 {
     font-family: "Courier New", monospace;
 }
@@ -129,6 +129,11 @@ span.priority0
 
 span.priority1
 {
+    color: green;
+}
+
+span.unknownPriority
+{
     color: red;
 }
 
@@ -140,4 +145,31 @@ td
 table.lexicon
 {
     margin: 2em 0 5em 0;
+}
+
+p.error
+{
+    color: red;
+}
+
+p.translationDescription
+{
+    width: 30em;
+    margin-bottom: 2em;
+}
+
+p.translationOutputDescription
+{
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+ul.translation
+{
+    margin-bottom: 1em;
+}
+
+ul.translation li
+{
+    margin-left: 2em;
 }

@@ -5,6 +5,9 @@ require 'www-library/RequestHandler'
 
 require 'application/BaseHandler'
 require 'application/Generator'
+require 'application/TranslationForm'
+require 'application/Translator'
+require 'application/WordForm'
 require 'application/WordFormContents'
 
 require 'visual/LanguageHandler'
@@ -26,14 +29,17 @@ class LanguageHandler < BaseHandler
   def installHandlers
     WWWLib::RequestHandler.newBufferedObjectsGroup
 
-    addWordHandler = WWWLib::RequestHandler.menu('Add word', 'addWord', method(:addWord), nil, method(:isPrivileged))
+    WWWLib::RequestHandler.menu('Add word', 'addWord', method(:addWord), nil, method(:isPrivileged))
+    @viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
+    WWWLib::RequestHandler.menu('Translate', 'translate', method(:translate))
+
     @editWordHandler = WWWLib::RequestHandler.handler('editWord', method(:editWord), 1)
     @submitWordHandler = WWWLib::RequestHandler.handler('submitWord', method(:submitWord))
-    @viewWordsHandler = WWWLib::RequestHandler.menu('View lexicon', 'viewWords', method(:viewWords))
     @deleteWordHandler = WWWLib::RequestHandler.handler('deleteWord', method(:deleteWord), 1)
     @regenerateWordHandler = WWWLib::RequestHandler.handler('regenerateWord', method(:regenerateWord), 1)
     @viewGroupHandler = WWWLib::RequestHandler.handler('viewGroup', method(:viewGroup), 1)
     @submitEditedWordHandler = WWWLib::RequestHandler.handler('submitEditedWord', method(:submitEditedWord))
+    @submitTranslationHandler = WWWLib::RequestHandler.handler('submitTranslation', method(:submitTranslation))
 
     WWWLib::RequestHandler.getBufferedObjects.each do |handler|
       addHandler(handler)
@@ -245,6 +251,28 @@ class LanguageHandler < BaseHandler
     end
     title = "Group \"#{group}\""
     output = renderWords(request, words)
+    return @generator.get(output, request, title)
+  end
+
+  def translate(request)
+    title, output = renderTranslationForm
+    return @generator.get(output, request, title)
+  end
+
+  def submitTranslation(request)
+    translationForm = TranslationForm.new(request)
+    if translationForm.error
+      argumentError
+    end
+    translator = Translator.new(lexicon)
+    title = nil
+    output = nil
+    begin
+      xsampaTranslation, ipaTranslation = translator.translate(translationForm.input)
+      title, output = renderTranslation(xsampaTranslation, ipaTranslation)
+    rescue Translator::Error => error
+      title, output = renderTranslationError(error.message)
+    end
     return @generator.get(output, request, title)
   end
 end

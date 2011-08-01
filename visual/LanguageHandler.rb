@@ -7,6 +7,7 @@ require 'www-library/HTMLWriter'
 
 require 'application/BaseHandler'
 require 'application/Generator'
+require 'application/TranslationForm'
 require 'application/WordForm'
 
 class LanguageHandler < BaseHandler
@@ -101,7 +102,7 @@ class LanguageHandler < BaseHandler
   def renderSubmissionError(message)
     title = 'Submission error'
     writer = getWriter
-    writer.p do
+    writer.p(class: 'error') do
       message
     end
     return [title, writer.output]
@@ -119,13 +120,14 @@ class LanguageHandler < BaseHandler
     privileged = isPrivileged(request)
     writer = getWriter
     writer.p do
-      "Number of words in the database: #{lexicon.count}"
+      "Number of functions in the database: #{lexicon.count}"
     end
     writer.table(class: 'lexicon') do
       writer.tr do
         descriptions = [
           'Function',
           'IPA',
+          'X-SAMPA',
           'Description',
           'Group',
           'Time added',
@@ -154,24 +156,30 @@ class LanguageHandler < BaseHandler
           else
             functionString = function
           end
-          xsampa = word[:word]
-          ipa = XSAMPA.toIPA(xsampa)
           description = word[:description]
           writer.td do
             writer.span(class: 'function', id: function) do
               functionString
             end
           end
+          xsampa = word[:word]
           writer.td do
+            ipa = XSAMPA.toIPA(xsampa)
             writer.span(class: 'ipa') do
               priority = getPriority(xsampa)
               if priority == nil
-                ipa
+                priorityClass = 'unknownPriority'
               else
-                writer.span(class: "priority#{priority}") do
-                  ipa
-                end
+                priorityClass = "priority#{priority}"
               end
+              writer.span(class: priorityClass) do
+                ipa
+              end
+            end
+          end
+          writer.td do
+            writer.span(class: 'xsampa') do
+              xsampa
             end
           end
           writer.td do
@@ -274,5 +282,58 @@ class LanguageHandler < BaseHandler
       'The word has been deleted.'
     end
     return writer.output
+  end
+
+  def renderTranslationForm
+    title = 'Translate'
+    writer = getWriter
+    writer.p(class: 'translationDescription') do
+      'The translation service currently only supports the translation of the functional representations to the language in its IPA representation.'
+    end
+    writer.form(@submitTranslationHandler.getPath) do
+      writer.textArea('Input', TranslationForm::Input)
+      writer.submit
+    end
+    return title, writer.output
+  end
+
+  def renderTranslation(xsampaTranslation, ipaTranslation)
+    title = 'Translation'
+    writer = getWriter
+    targets = {
+      'IPA' => [ipaTranslation, false],
+      'X-SAMPA' => [xsampaTranslation, true],
+    }
+    targets.each do |description, translationData|
+      translation, isXSAMPA = translationData
+      writer.p(class: 'translationOutputDescription') do
+        "#{description}:"
+      end
+      writer.ul(class: 'translation') do
+        lines = translation.split("\n")
+        lines.each do |line|
+          writer.li do
+            if isXSAMPA
+              writer.span(class: 'xsampa') do
+                line
+              end
+            else
+              line
+            end
+          end
+        end
+        nil
+      end
+    end
+    return title, writer.output
+  end
+
+  def renderTranslationError(message)
+    title = 'Translation error'
+    writer = getWriter
+    writer.p(class: 'error') do
+      "An error occurred: #{message}"
+    end
+    return title, writer.output
   end
 end
