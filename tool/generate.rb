@@ -2,7 +2,8 @@ $:.concat ['.', '..']
 
 require 'application/Generator'
 
-count = 10
+count = 7
+lines = 4
 
 if ARGV.size == 1
   priority = ARGV.first.to_i
@@ -14,5 +15,7 @@ if ARGV.size == 1
 
   puts words.join(' ')
 else
-  puts Generator.noise(count)
+  lines.times do
+    puts Generator.noise(count)
+  end
 end

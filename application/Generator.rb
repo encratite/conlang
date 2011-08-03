@@ -139,7 +139,7 @@ module Generator
 
   def self.generateWord(priority)
     while true
-      words = Words[priority]
+      words = Words[priority].to_a
       word = words[rand(words.size)]
       return word
     end
