@@ -5,124 +5,94 @@ require 'nil/random'
 require 'application/Array'
 
 module Generator
-  Vowels = [
-    'i',
-    #'a_"',
+  PalatalisableVowels = [
     'a',
     'u',
-    'E',
-    'e',
-    'O',
     'o',
-    '@',
-    'y',
+    'e',
   ]
 
-  Diphthongs = [
-    #'ia',
-    #'iu',
-    'ai',
-    'au',
-    #'ui',
-    #'ua',
-  ]
+  Vowels = [
+    'i',
+  ] + PalatalisableVowels
 
-  InitialNasals = [
+  BasicNasals = [
     'm',
+    #'N',
+    'n',
   ]
 
-  FinalNasals = [
-    'N',
-    'n',
+  ExtendedNasals = [
+    'J',
   ]
 
   VoicelessPlosives = [
     'k',
     'p',
     't',
-    #Bad contrast with k
-    #'q',
   ]
 
   VoicedPlosives = [
     'g',
     'b',
     'd',
-    #Bad contrast with g
-    #'G\\',
+  ]
+
+  VoicelessPalatalisedPlosives = [
+    'k_j',
+    'p_j',
+    #'t_j',
+  ]
+
+  VoicedPalatalisedPlosives = [
+    'g_j',
+    'b_j',
+    #'d_j',
   ]
 
   Approximants = [
+    'j',
+    'w',
     'l',
   ]
 
-  InitialVoicelessFricatives = [
+  VoicelessFricatives = [
     'h',
-    #'K',
-  ]
-
-  FinalVoicelessFricatives = [
-    'f',
+    #'f',
     's',
     'S',
-    #Bad contrast with h
-    #'x',
-    #Bad contrast with f
-    #'F',
-    #Bad contrast with x
-    #'X',
-    #Bad contrast with s\
-    #'s`',
-    #Bad contrast with s`
-    #'s\\'
+    #'S\\'
   ]
 
   VoicedFricatives = [
-    'v',
-    'z',
-    'Z',
-    #Bad contrast with g
-    #'G',
-    #Bad contrast with v
-    #'B',
-    #Bad contrast with z\
-    #'z`',
-    #Bad contrast with z`
-    #'z\\',
+    #'v',
+    #'z',
+    #'Z',
   ]
 
   Taps = [
     '4',
   ]
 
-  Stops = [
-    '?',
-  ]
-
   Affricates = [
-    'ts',
-    'dz',
     'tS',
-    'dZ',
-    #'t`s`',
-    #'d`z`',
-    #'ts\\',
-    #'dz\\',
+    #'dZ',
+    'ts',
+    #'dz',
+    #'tS\\',
   ]
-
-  VowelCluster = Vowels + Diphthongs
 
   Plosives = VoicelessPlosives + VoicedPlosives
-  PalatalisedPlosives = Plosives * ['_j']
-  LabialisedPlosives = Plosives * ['_w']
-  Fricatives = InitialVoicelessFricatives + FinalVoicelessFricatives + VoicedFricatives
+  Fricatives = VoicelessFricatives + VoicedFricatives
 
-  InitialConsonants = InitialNasals + Plosives + PalatalisedPlosives + LabialisedPlosives + Approximants + Fricatives + Taps + Stops + Affricates
-  FinalConsonants = FinalNasals
+  Consonants = BasicNasals + Plosives + Approximants + Fricatives + Taps
+
+  PalatalisedPlosives = VoicelessPalatalisedPlosives + VoicedPalatalisedPlosives
+  PalatalisedConsonants = PalatalisedPlosives + ExtendedNasals
 
   Words = [
-    InitialConsonants * VowelCluster,
-    InitialConsonants * Vowels * FinalConsonants,
+    Consonants * Vowels,
+    (PalatalisedConsonants * PalatalisableVowels + Affricates * Vowels) * Consonants * Vowels,
   ].map { |x| x.to_set }
 
   def self.totalWordCount
@@ -153,22 +123,27 @@ module Generator
   end
 
   def self.describe
-    puts InitialConsonants.size
-    puts VowelCluster.size
-    puts FinalConsonants.size
     self.printClassSizes
     self.printWordCount
   end
 
-  def self.noise(words = 8)
+  def self.noise(syllableCount)
     generatedWords = []
     scale = Nil::RandomScale.new
-    weights = [3, 1]
+    weights = [2, 1]
     Words.size.times do |i|
       scale.add(i, weights[i])
     end
-    words.times do |i|
-      generatedWords << self.generateWord(scale.get)
+    while true
+      priority = scale.get
+      syllableCount -= priority + 1
+      generatedWords << self.generateWord(priority)
+      if syllableCount <= 1
+        break
+      end
+    end
+    if syllableCount == 1
+      generatedWords << self.generateWord(0)
     end
     return generatedWords.join(' ')
   end
