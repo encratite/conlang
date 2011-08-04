@@ -1,13 +1,13 @@
 require 'www-library/BaseSite'
 
 require 'application/database'
-require 'application/TsunSiteGenerator'
+require 'application/ConlangSiteGenerator'
 
-class TsunSite < WWWLib::BaseSite
+class ConlangSite < WWWLib::BaseSite
   attr_reader :database, :privilegedAddresses
 
   def initialize(configuration)
-    super('tsun', TsunSiteGenerator)
+    super('conlang', ConlangSiteGenerator)
     @privilegedAddresses = configuration::PrivilegedAddresses
     @database = getDatabase(configuration::Database)
   end

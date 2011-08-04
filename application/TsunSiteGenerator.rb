@@ -1,9 +1,9 @@
-require 'visual/TsunSiteGenerator'
+require 'visual/ConlangSiteGenerator'
 
 require 'www-library/SiteGenerator'
 
-class TsunSiteGenerator < WWWLib::SiteGenerator
-  Name = 'Tsun'
+class ConlangSiteGenerator < WWWLib::SiteGenerator
+  Name = 'Conlang'
 
   def initialize(site, manager)
     super(manager)

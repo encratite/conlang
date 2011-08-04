@@ -2,14 +2,14 @@ $:.concat ['.', '..']
 
 require 'configuration/Configuration'
 
-require 'application/TsunSite'
+require 'application/ConlangSite'
 require 'application/LanguageHandler'
 
-tsunSite = TsunSite.new(Configuration)
-LanguageHandler.new(tsunSite)
+conlangSite = ConlangSite.new(Configuration)
+LanguageHandler.new(conlangSite)
 
 handler = lambda do |environment|
-  tsunSite.requestManager.handleRequest(environment)
+  conlangSite.requestManager.handleRequest(environment)
 end
 
 run(handler)
