@@ -7,6 +7,7 @@ require 'application/Array'
 module Generator
   Vowels = [
     'i',
+    #'a_"',
     'a',
     'u',
     'E',
@@ -18,16 +19,19 @@ module Generator
   ]
 
   Diphthongs = [
-    'ia',
-    'iu',
+    #'ia',
+    #'iu',
     'ai',
     'au',
-    'ui',
-    'ua',
+    #'ui',
+    #'ua',
   ]
 
-  Nasals = [
+  InitialNasals = [
     'm',
+  ]
+
+  FinalNasals = [
     'N',
     'n',
   ]
@@ -54,14 +58,15 @@ module Generator
 
   InitialVoicelessFricatives = [
     'h',
-    'K',
+    #'K',
   ]
 
   FinalVoicelessFricatives = [
     'f',
     's',
     'S',
-    'x',
+    #Bad contrast with h
+    #'x',
     #Bad contrast with f
     #'F',
     #Bad contrast with x
@@ -76,7 +81,8 @@ module Generator
     'v',
     'z',
     'Z',
-    'G',
+    #Bad contrast with g
+    #'G',
     #Bad contrast with v
     #'B',
     #Bad contrast with z\
@@ -107,11 +113,12 @@ module Generator
   VowelCluster = Vowels + Diphthongs
 
   Plosives = VoicelessPlosives + VoicedPlosives
-  InitialFricatives = InitialVoicelessFricatives
-  FinalFricatives = FinalVoicelessFricatives + VoicedFricatives
+  PalatalisedPlosives = Plosives * ['_j']
+  LabialisedPlosives = Plosives * ['_w']
+  Fricatives = InitialVoicelessFricatives + FinalVoicelessFricatives + VoicedFricatives
 
-  InitialConsonants = Plosives + Approximants + InitialFricatives + Taps + Stops + Affricates
-  FinalConsonants = Nasals + FinalFricatives
+  InitialConsonants = InitialNasals + Plosives + PalatalisedPlosives + LabialisedPlosives + Approximants + Fricatives + Taps + Stops + Affricates
+  FinalConsonants = FinalNasals
 
   Words = [
     InitialConsonants * VowelCluster,
