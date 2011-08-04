@@ -93,7 +93,7 @@ module Generator
     '?',
   ]
 
-  InitialComposites = [
+  Affricates = [
     'ts',
     'dz',
     'tS',
@@ -110,7 +110,7 @@ module Generator
   InitialFricatives = InitialVoicelessFricatives
   FinalFricatives = FinalVoicelessFricatives + VoicedFricatives
 
-  InitialConsonants = Plosives + Approximants + InitialFricatives + Taps + Stops + InitialComposites
+  InitialConsonants = Plosives + Approximants + InitialFricatives + Taps + Stops + Affricates
   FinalConsonants = Nasals + FinalFricatives
 
   Words = [
