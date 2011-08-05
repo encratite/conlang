@@ -5,6 +5,15 @@ require 'application/Generator'
 
 require 'configuration/Configuration'
 
+puts "You are about to overwrite the current lexicon. Are you sure you want to continue? Enter 'yes' to confirm."
+text = STDIN.gets.strip
+if text.downcase != 'yes'
+  puts 'Aborting.'
+  exit
+end
+
+puts 'Regenerating lexicon...'
+
 database = getDatabase(Configuration::Database)
 lexicon = database[:lexicon]
 usedWords = []

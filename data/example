@@ -2,3 +2,8 @@ negatedExistentialQuantifier(country, firstPersonAssociate(quantifiedAlias))
 isEqual(firstPersonAssociate(country), world)
 negatedExistentialQuantifier(family, firstPersonAssociate(quantifiedAlias))
 isEqual(firstPersonAssociate(family), mankind)
+
+negate(existentialQuantifier(country, firstPersonAssociate(quantifiedAlias)))
+isEqual(firstPersonAssociate(country), world)
+negate(existentialQuantifier(family, firstPersonAssociate(quantifiedAlias)))
+isEqual(firstPersonAssociate(family), mankind)
