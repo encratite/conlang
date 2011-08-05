@@ -28,7 +28,6 @@ class Translator
 
     def serialise
       output = @word
-      #puts inspect
       if @arguments.size != @argumentCount
         raise Error.new("Invalid argument count for function \"#{function}\", expected #{@argumentCount}, not #{@arguments.size}")
       end
@@ -100,10 +99,8 @@ class Translator
     if function == nil
       error "Invalid function name: #{functionName}"
     end
-    puts "Function #{function.function}: #{input.inspect}"
     if input.empty?
       #end of string, no arguments were specified
-      puts "Nullary function #{function.function}: #{input.inspect}"
     else
       #check if it's a nullary invocation
       if input[0] == '('
@@ -119,12 +116,10 @@ class Translator
             #end of the invocation
             #do not trim, otherwise we might modify outer whitespace which is supposed to remain as it is
             input = skip(input)
-            puts "End of invocation for #{function.function}: #{input.inspect}"
             break
           when ','
             #argument separator
             input = skipTrim(input)
-            puts "Comma in #{function.function}: #{input.inspect}"
           else
             functionalComponentData = translateFunctionalComponent(input)
             if functionalComponentData == nil
@@ -132,12 +127,10 @@ class Translator
             end
             input, argument = functionalComponentData
             function.arguments << argument
-            puts "Argument count for #{function.function}: #{function.arguments.size}"
           end
         end
       else
         #nullary
-        puts "Nullary function #{function.function}: #{input.inspect}"
       end
     end
     return [input, function]
