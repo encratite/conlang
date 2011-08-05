@@ -5,21 +5,21 @@ require 'nil/random'
 require 'application/Array'
 
 module Generator
-  PalatalisableVowels = [
+  Vowels = [
+    'i',
     'a',
     'u',
     'o',
     'e',
   ]
 
-  Vowels = [
-    'i',
-  ] + PalatalisableVowels
-
   BasicNasals = [
     'm',
-    #'N',
     'n',
+  ]
+
+  MedialNasals = [
+    'N',
   ]
 
   ExtendedNasals = [
@@ -38,18 +38,6 @@ module Generator
     'd',
   ]
 
-  VoicelessPalatalisedPlosives = [
-    'k_j',
-    'p_j',
-    #'t_j',
-  ]
-
-  VoicedPalatalisedPlosives = [
-    'g_j',
-    'b_j',
-    #'d_j',
-  ]
-
   Approximants = [
     'j',
     'w',
@@ -58,42 +46,44 @@ module Generator
 
   VoicelessFricatives = [
     'h',
-    #'f',
+    'f',
     's',
-    #'S',
-    'C',
-    's\\'
+    'S',
   ]
 
   VoicedFricatives = [
     #'v',
-    'z',
+    #'z',
     #'Z',
+  ]
+
+  Stops = [
+    '?',
   ]
 
   Taps = [
     '4',
   ]
 
-  Affricates = [
-    #'tS',
-    #'dZ',
+  VoicelessAffricates = [
+    'tS',
     'ts',
+  ]
+
+  VoicedAffricates = [
+    #'dZ',
     #'dz',
-    'ts\\',
   ]
 
   Plosives = VoicelessPlosives + VoicedPlosives
   Fricatives = VoicelessFricatives + VoicedFricatives
-
-  Consonants = BasicNasals + Plosives + Approximants + Fricatives + Taps
-
-  PalatalisedPlosives = VoicelessPalatalisedPlosives + VoicedPalatalisedPlosives
-  PalatalisedConsonants = PalatalisedPlosives + ExtendedNasals
+  Affricates = VoicelessAffricates + VoicedAffricates
+  BasicConsonants = BasicNasals + Plosives + Approximants + Fricatives + Stops + Taps
+  ExtendedConsonants = ExtendedNasals + Affricates
 
   Words = [
-    Consonants * Vowels,
-    (PalatalisedConsonants * PalatalisableVowels + Affricates * Vowels) * Consonants * Vowels,
+    BasicConsonants * Vowels,
+    ExtendedConsonants * Vowels * BasicConsonants * Vowels,
   ].map { |x| x.to_set }
 
   def self.totalWordCount
