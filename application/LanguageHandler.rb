@@ -226,9 +226,11 @@ class LanguageHandler < BaseHandler
       end
       row = result.first
       function = row[:function_name]
-      priority = Generator.getPriority(row[:word])
+      oldWord = row[:word]
+      priority = Generator.getPriority(oldWord)
       if priority == nil
-        plainError 'Unable to find the word in the lexicon.'
+        #plainError 'Unable to find the word in the lexicon.'
+        priority = oldWord.size >= 4 ? 1 : 0
       end
       newWord = generateWord(priority)
       if newWord == nil

@@ -13,17 +13,9 @@ module Generator
     'e',
   ]
 
-  BasicNasals = [
+  Nasals = [
     'm',
     'n',
-  ]
-
-  MedialNasals = [
-    'N',
-  ]
-
-  ExtendedNasals = [
-    'J',
   ]
 
   VoicelessPlosives = [
@@ -78,12 +70,16 @@ module Generator
   Plosives = VoicelessPlosives + VoicedPlosives
   Fricatives = VoicelessFricatives + VoicedFricatives
   Affricates = VoicelessAffricates + VoicedAffricates
-  BasicConsonants = BasicNasals + Plosives + Approximants + Fricatives + Stops + Taps
-  ExtendedConsonants = ExtendedNasals + Affricates
+
+  BasicConsonants = Nasals + Plosives + Approximants + VoicelessFricatives
+  ExtendedConsonants = Affricates + Stops + Taps
+
+  BasicSyllable = BasicConsonants * Vowels
+  ExtendedSyllable = ExtendedConsonants * Vowels
 
   Words = [
-    BasicConsonants * Vowels,
-    ExtendedConsonants * Vowels * BasicConsonants * Vowels,
+    BasicSyllable,
+    ExtendedSyllable * BasicSyllable,
   ].map { |x| x.to_set }
 
   def self.totalWordCount
