@@ -110,6 +110,8 @@ module Generator
   end
 
   def self.describe
+    puts "Consonants: #{BasicConsonants.size + ExtendedConsonants.size}"
+    puts "Vowels: #{Vowels.size}"
     self.printClassSizes
     self.printWordCount
   end

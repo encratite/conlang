@@ -7,3 +7,8 @@ negate(existentialQuantifier(country, firstPersonAssociate(quantifiedAlias)))
 isEqual(firstPersonAssociate(country), world)
 negate(existentialQuantifier(family, firstPersonAssociate(quantifiedAlias)))
 isEqual(firstPersonAssociate(family), mankind)
+
+negate(existentialQuantifier(country, associate(firstPerson, quantifiedAlias)))
+isEqual(associate(firstPerson, country), world)
+negate(existentialQuantifier(family, associate(firstPerson, quantifiedAlias)))
+isEqual(associate(firstPerson, family), mankind)
