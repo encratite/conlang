@@ -14,6 +14,7 @@ create table lexicon
         --null if not ordered
         group_rank integer,
         time_added timestamp not null,
+        last_modified timestamp not null,
 
         constraint argument_count_counstraint check (argument_count >= 0)
 );

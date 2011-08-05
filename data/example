@@ -1,0 +1,4 @@
+negatedExistentialQuantifier(country, firstPersonAssociate(quantifiedAlias))
+isEqual(firstPersonAssociate(country), world)
+negatedExistentialQuantifier(family, firstPersonAssociate(quantifiedAlias))
+isEqual(firstPersonAssociate(family), mankind)

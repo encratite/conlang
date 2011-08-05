@@ -91,6 +91,10 @@ class LanguageHandler < BaseHandler
     return word
   end
 
+  def getTime
+    return Time.now.utc
+  end
+
   def processWordSubmission(request, editing = false)
     form = WordForm.new(request)
     if form.error
@@ -137,6 +141,7 @@ class LanguageHandler < BaseHandler
       else
         rank = rank.to_i
       end
+      time = getTime
       data = {
         function_name: form.function,
         argument_count: argumentCount,
@@ -145,6 +150,7 @@ class LanguageHandler < BaseHandler
         alias_definition: aliasDefinition,
         group_name: form.group,
         group_rank: rank,
+        last_modified: time,
       }
       if editing
         editId = form.id.to_i
@@ -153,7 +159,7 @@ class LanguageHandler < BaseHandler
         end
         lexicon.where(id: editId).update(data)
       else
-        data[:time_added] = Time.now.utc
+        data[:time_added] = time
         lexicon.insert(data)
       end
     end
@@ -204,15 +210,9 @@ class LanguageHandler < BaseHandler
     return @generator.get(renderDeletionConfirmation, request, title)
   end
 
-  def getPriority(word)
-    priority = 0
-    Generator::Words.each do |wordClass|
-      if wordClass.include?(word)
-        return priority
-      end
-      priority += 1
-    end
-    return nil
+  def generateWord(priority)
+    usedWords = lexicon.select(:word).all.map { |x| x[:word] }
+    return Generator.generateUnusedWord(usedWords, priority)
   end
 
   def regenerateWord(request)
@@ -226,7 +226,7 @@ class LanguageHandler < BaseHandler
       end
       row = result.first
       function = row[:function_name]
-      priority = getPriority(row[:word])
+      priority = Generator.getPriority(row[:word])
       if priority == nil
         plainError 'Unable to find the word in the lexicon.'
       end
@@ -234,7 +234,7 @@ class LanguageHandler < BaseHandler
       if newWord == nil
         plainError 'No space left in this priority class.'
       end
-      lexicon.where(id: id).update(word: newWord)
+      lexicon.where(id: id).update(word: newWord, last_modified: getTime)
     end
     path = "#{request.referrer}##{function}"
     return WWWLib::HTTPReply.refer(path)

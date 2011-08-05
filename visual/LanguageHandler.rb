@@ -166,7 +166,7 @@ class LanguageHandler < BaseHandler
           writer.td do
             ipa = XSAMPA.toIPA(xsampa)
             writer.span(class: 'ipa') do
-              priority = getPriority(xsampa)
+              priority = Generator.getPriority(xsampa)
               if priority == nil
                 priorityClass = 'unknownPriority'
               else

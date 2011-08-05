@@ -60,13 +60,14 @@ module Generator
     'h',
     #'f',
     's',
-    'S',
-    #'S\\'
+    #'S',
+    'C',
+    's\\'
   ]
 
   VoicedFricatives = [
     #'v',
-    #'z',
+    'z',
     #'Z',
   ]
 
@@ -75,11 +76,11 @@ module Generator
   ]
 
   Affricates = [
-    'tS',
+    #'tS',
     #'dZ',
     'ts',
     #'dz',
-    #'tS\\',
+    'ts\\',
   ]
 
   Plosives = VoicelessPlosives + VoicedPlosives
@@ -146,5 +147,27 @@ module Generator
       generatedWords << self.generateWord(0)
     end
     return generatedWords.join(' ')
+  end
+
+  def self.getPriority(word)
+    priority = 0
+    Words.each do |wordClass|
+      if wordClass.include?(word)
+        return priority
+      end
+      priority += 1
+    end
+    return nil
+  end
+
+  def self.generateUnusedWord(usedWords, priority)
+    unusedWords = Generator::Words[priority].reject do |word|
+      usedWords.include?(word)
+    end
+    if unusedWords.empty?
+      return nil
+    end
+    word = unusedWords[rand(unusedWords.size)]
+    return word
   end
 end
