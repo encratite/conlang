@@ -7,17 +7,28 @@ class Translator
   class Function
     attr_reader :function, :word, :argumentCount
 
-    attr_accessor :arguments
-
     def initialize(row)
-      @function  = row[:function_name]
+      @function = row[:function_name]
       @word = row[:word]
       @argumentCount = row[:argument_count]
+    end
+  end
+
+  class FunctionInstance
+    attr_reader :function, :word, :argumentCount
+
+    attr_accessor :arguments
+
+    def initialize(instance)
+      @function = instance.function
+      @word = instance.word
+      @argumentCount = instance.argumentCount
       @arguments = []
     end
 
     def serialise
       output = @word
+      #puts inspect
       if @arguments.size != @argumentCount
         raise Error.new("Invalid argument count for function \"#{function}\", expected #{@argumentCount}, not #{@arguments.size}")
       end
@@ -25,6 +36,15 @@ class Translator
         output += " #{argument.serialise}"
       end
       return output
+    end
+
+    def inspect
+      if @arguments.empty?
+        return "#{@function}"
+      else
+        argumentString = @arguments.map { |x| x.inspect }.join(', ')
+        return "#{@function}(#{argumentString})"
+      end
     end
   end
 
@@ -45,10 +65,10 @@ class Translator
     return [name, remainingString]
   end
 
-  def getFunction(function)
-    @functions.each do |word|
-      if word.function == function
-        return word
+  def getFunction(functionName)
+    @functions.each do |function|
+      if function.function == functionName
+        return FunctionInstance.new(function)
       end
     end
     return nil
@@ -80,8 +100,10 @@ class Translator
     if function == nil
       error "Invalid function name: #{functionName}"
     end
+    puts "Function #{function.function}: #{input.inspect}"
     if input.empty?
       #end of string, no arguments were specified
+      puts "Nullary function #{function.function}: #{input.inspect}"
     else
       #check if it's a nullary invocation
       if input[0] == '('
@@ -97,10 +119,12 @@ class Translator
             #end of the invocation
             #do not trim, otherwise we might modify outer whitespace which is supposed to remain as it is
             input = skip(input)
+            puts "End of invocation for #{function.function}: #{input.inspect}"
             break
           when ','
             #argument separator
             input = skipTrim(input)
+            puts "Comma in #{function.function}: #{input.inspect}"
           else
             functionalComponentData = translateFunctionalComponent(input)
             if functionalComponentData == nil
@@ -108,16 +132,19 @@ class Translator
             end
             input, argument = functionalComponentData
             function.arguments << argument
+            puts "Argument count for #{function.function}: #{function.arguments.size}"
           end
         end
       else
         #nullary
+        puts "Nullary function #{function.function}: #{input.inspect}"
       end
     end
     return [input, function]
   end
 
   def translate(input)
+    input = input.gsub("\r", '')
     xsampaOutput = ''
     ipaOutput = ''
     skipCharacters = " .,:;-!?\n\r"

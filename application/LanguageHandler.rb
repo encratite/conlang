@@ -53,7 +53,7 @@ class LanguageHandler < BaseHandler
   def addWord(request)
     privilegeCheck(request)
     title = 'Add a new word'
-    output = renderAddWordForm(@submitWordHandler)
+    output = renderWordForm(@submitWordHandler)
     return @generator.get(output, request, title)
   end
 
@@ -80,7 +80,7 @@ class LanguageHandler < BaseHandler
   end
 
   def generateWord(priority)
-    usedWords = lexicon.select(:word).all.map { |x| x[0] }
+    usedWords = lexicon.select(:word).all.map { |x| x[:word] }
     unusedWords = Generator::Words[priority].reject do |word|
       usedWords.include?(word)
     end
@@ -153,7 +153,7 @@ class LanguageHandler < BaseHandler
         end
         lexicon.where(id: editId).update(data)
       else
-        data[:time_added] = Time.now.utc,
+        data[:time_added] = Time.now.utc
         lexicon.insert(data)
       end
     end

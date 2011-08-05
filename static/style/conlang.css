@@ -60,16 +60,16 @@ li
     list-style-type: none;
 }
 
-textarea
-{
-    width: 20em;
-    height: 5em;
-}
-
 textarea, input, select
 {
     width: 20em;
     margin-bottom: 1em;
+}
+
+textarea
+{
+    width: 40em;
+    height: 10em;
 }
 
 input.submit
