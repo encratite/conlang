@@ -312,6 +312,9 @@ class LanguageHandler < BaseHandler
       writer.ul(class: 'translation') do
         lines = translation.split("\n")
         lines.each do |line|
+          if line.empty?
+            line = '&nbsp;'
+          end
           writer.li do
             if isXSAMPA
               writer.span(class: 'xsampa') do
