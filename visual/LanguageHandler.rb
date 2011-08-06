@@ -7,6 +7,7 @@ require 'www-library/HTMLWriter'
 
 require 'application/BaseHandler'
 require 'application/Generator'
+require 'application/Romanisation'
 require 'application/TranslationForm'
 require 'application/WordForm'
 
@@ -126,6 +127,7 @@ class LanguageHandler < BaseHandler
       writer.tr do
         descriptions = [
           'Function',
+          'Romanisation',
           'IPA',
           'X-SAMPA',
           'Description',
@@ -164,17 +166,21 @@ class LanguageHandler < BaseHandler
           end
           xsampa = word[:word]
           writer.td do
+            romanisation = Romanisation.romaniseXSAMPA(xsampa)
+            priority = Generator.getPriority(xsampa)
+            if priority == nil
+              priorityClass = 'unknownPriority'
+            else
+              priorityClass = "priority#{priority}"
+            end
+            writer.span(class: priorityClass) do
+              romanisation
+            end
+          end
+          writer.td do
             ipa = XSAMPA.toIPA(xsampa)
             writer.span(class: 'ipa') do
-              priority = Generator.getPriority(xsampa)
-              if priority == nil
-                priorityClass = 'unknownPriority'
-              else
-                priorityClass = "priority#{priority}"
-              end
-              writer.span(class: priorityClass) do
-                ipa
-              end
+              ipa
             end
           end
           writer.td do

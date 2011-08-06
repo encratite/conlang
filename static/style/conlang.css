@@ -117,9 +117,13 @@ span.function, span.xsampa
     font-family: "Courier New", monospace;
 }
 
-span.ipa, span.priority0, span.priority1
+span.ipa
 {
     font-family: "Times New Roman", serif;
+}
+
+span.priority0, span.priority1
+{
     font-weight: bold;
 }
 
