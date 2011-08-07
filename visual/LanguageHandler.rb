@@ -306,12 +306,14 @@ class LanguageHandler < BaseHandler
   def renderTranslation(xsampaTranslation, ipaTranslation)
     title = 'Translation'
     writer = getWriter
+    romanisedTranslation = Romanisation.romaniseXSAMPA(xsampaTranslation)
     targets = {
-      'IPA' => [ipaTranslation, false],
-      'X-SAMPA' => [xsampaTranslation, true],
+      'Romanised' => [romanisedTranslation, nil],
+      'IPA' => [ipaTranslation, 'ipa'],
+      'X-SAMPA' => [xsampaTranslation, 'xsampa'],
     }
     targets.each do |description, translationData|
-      translation, isXSAMPA = translationData
+      translation, spanClass = translationData
       writer.p(class: 'translationOutputDescription') do
         "#{description}:"
       end
@@ -320,10 +322,14 @@ class LanguageHandler < BaseHandler
         lines.each do |line|
           if line.empty?
             line = '&nbsp;'
+          else
+            if spanClass == nil
+              line = line[0].upcase + line[1..-1]
+            end
           end
           writer.li do
-            if isXSAMPA
-              writer.span(class: 'xsampa') do
+            if spanClass
+              writer.span(class: spanClass) do
                 line
               end
             else

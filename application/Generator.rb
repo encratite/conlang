@@ -7,10 +7,10 @@ require 'application/Array'
 module Generator
   Vowels = [
     'i',
-    'a',
+    'a_"',
     'u',
-    'o',
-    'e',
+    'o_o',
+    'e_o',
   ]
 
   Nasals = [

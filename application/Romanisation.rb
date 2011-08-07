@@ -1,5 +1,8 @@
 module Romanisation
   Replacements = {
+    'a_"' => 'a',
+    'o_o' => 'o',
+    'e_o' => 'e',
     'tS' => 'c',
     'ts' => 'z',
     'S' => 'x',
