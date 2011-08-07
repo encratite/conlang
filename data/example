@@ -1,18 +1,10 @@
-negatedExistentialQuantifier(country, firstPersonAssociate(quantifiedAlias))
-isEqual(firstPersonAssociate(country), world)
-negatedExistentialQuantifier(family, firstPersonAssociate(quantifiedAlias))
-isEqual(firstPersonAssociate(family), mankind)
-
 negate(existentialQuantifier(country, firstPersonAssociate(quantifiedAlias)))
-newAlias1(world), newAlias2(nowhere)
-isEqual(firstPersonAssociate(country), exclusiveOr(alias1, alias2))
+exclusiveOr(world, nowhere)
+isEqual(firstPersonAssociate(country), previousStatement)
+
 negate(existentialQuantifier(family, firstPersonAssociate(quantifiedAlias)))
-newAlias1(mankind), newAlias2(nobody)
-isEqual(firstPersonAssociate(family), exclusiveOr(alias1, alias2))
+exclusiveOr(mankind, nobody)
+isEqual(firstPersonAssociate(family), previousStatement)
 
-negate(existentialQuantifier(country, associate(firstPerson, quantifiedAlias)))
-isEqual(associate(firstPerson, country), exclusiveOr(world, nowhere))
-negate(existentialQuantifier(family, associate(firstPerson, quantifiedAlias)))
-isEqual(associate(firstPerson, family), exclusiveOr(mankind, nobody))
-
-imperative(destroy(firstPerson, and(hate, love)))
+imperative(destroy(firstPerson, nextStatement))
+and(voidAll(hate), voidAll(love))

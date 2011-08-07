@@ -31,8 +31,16 @@ class Translator
       if @arguments.size != @argumentCount
         raise Error.new("Invalid argument count for function \"#{function}\", expected #{@argumentCount}, not #{@arguments.size}")
       end
-      @arguments.each do |argument|
-        output += " #{argument.serialise}"
+      if @function == 'voidAll'
+        target = @arguments.first
+        if !target.arguments.empty?
+          raise Error.new("The argument of a #{@function} may have no further arguments")
+        end
+        output += " #{target.word}"
+      else
+        @arguments.each do |argument|
+          output += " #{argument.serialise}"
+        end
       end
       return output
     end
@@ -123,7 +131,7 @@ class Translator
           else
             functionalComponentData = translateFunctionalComponent(input)
             if functionalComponentData == nil
-              parseError('Expected an argument', input)
+              parserError('Expected an argument', input)
             end
             input, argument = functionalComponentData
             function.arguments << argument
