@@ -7,13 +7,13 @@ require 'application/Array'
 module Generator
   HardVowels = [
     'i',
-    'e',
+    'o',
     'E',
   ]
 
   SoftVowels = [
     'u',
-    'o',
+    'e',
     'O',
   ]
 
@@ -25,7 +25,7 @@ module Generator
   Nasals = [
     'm',
     'n',
-    'J',
+    #'J',
   ]
 
   VoicelessPlosives = [
@@ -44,7 +44,7 @@ module Generator
     'j',
     'w',
     'l',
-    'L',
+    #'L',
     #'r\\`',
   ]
 
@@ -91,10 +91,11 @@ module Generator
   Plosives = VoicelessPlosives + VoicedPlosives
   Fricatives = VoicelessFricatives + VoicedFricatives
   Affricates = VoicelessAffricates + VoicedAffricates
-  Consonants = Plosives + Fricatives + Affricates + Nasals + Approximants + Taps + Stops
+
+  Consonants = Nasals + Plosives + Approximants + Fricatives + Taps + Stops + Affricates
 
   HardConsonants = VoicelessPlosives + VoicelessFricatives + VoicelessAffricates
-  SoftConsonants = VoicedPlosives + VoicedFricatives + VoicedAffricates
+  SoftConsonants = VoicedPlosives + VoicelessPlosives + VoicedAffricates
   NeutralConsonants = Nasals + Approximants + Taps + Stops
 
   HardSyllables = HardConsonants * HardVowels
@@ -106,13 +107,11 @@ module Generator
   Words = [
     BasicSyllables,
     BasicSyllables * NeutralSyllables,
-    BasicSyllables * NeutralSyllables * NeutralSyllables,
   ].map { |x| x.to_set }
 
   SyllableCounts = [
     1,
     2,
-    3,
   ]
 
   def self.totalWordCount
@@ -152,7 +151,7 @@ module Generator
   def self.noise(syllableCount)
     generatedWords = []
     scale = Nil::RandomScale.new
-    weights = [5, 3, 1]
+    weights = [2, 1]
     Words.size.times do |i|
       scale.add(i, weights[i])
     end
