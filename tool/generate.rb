@@ -2,7 +2,7 @@ $:.concat ['.', '..']
 
 require 'application/Generator'
 
-count = 7
+count = 6
 lines = 4
 
 if ARGV.size == 1
