@@ -307,7 +307,7 @@ class LanguageHandler < BaseHandler
   def renderTranslation(xsampaTranslation, ipaTranslation)
     title = 'Translation'
     writer = getWriter
-    xsampaTranslation = XSAMPAAdjustment.adjust(xsampaTranslation)
+    #xsampaTranslation = XSAMPAAdjustment.adjust(xsampaTranslation)
     romanisedTranslation = Romanisation.romaniseXSAMPA(xsampaTranslation)
     targets = {
       'Romanised' => [romanisedTranslation, nil],
