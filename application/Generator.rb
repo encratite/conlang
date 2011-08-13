@@ -3,21 +3,22 @@ require 'set'
 require 'nil/random'
 
 require 'application/Array'
+require 'application/Nahuatl'
 
 module Generator
   Vowels = [
     'a',
     'i',
-    'e',
     'o',
+    'e',
   ]
 
   InitialConsonants = [
+    'k_w',
+
     'p',
     't',
     'k',
-
-    'k_w',
 
     'j',
     'w',
@@ -31,55 +32,16 @@ module Generator
 
     'l',
 
-    's',
-    'S',
-
     'tS',
     'ts',
     'tK',
+
+    's',
+    'S',
   ]
 
-  Consonants = InitialConsonants + ExtendingConsonants
-
-  BannedClusters = [
-    ['j', 'tS'],
-    ['l', 'S'],
-    ['s', 'S'],
-    ['s', 'tS'],
-    ['tS', 'S'],
-    ['ts', 'S'],
-    ['ts', 'tS'],
-    ['ts', 'tK'],
-  ]
-
-  def self.filterWords(words)
-    output = []
-    words.each do |word|
-      isBanned = false
-      BannedClusters.each do |a, b|
-        Vowels.each do |vowel|
-          target = a + vowel + b
-          next if !word.index(target)
-          isBanned = true
-          break
-        end
-        break if isBanned
-      end
-      next if isBanned
-      output << word
-    end
-    return output
-  end
-
-  Initials = InitialConsonants * Vowels
-  ExtendedInitials = Initials * ExtendingConsonants
-
-  Words = [
-    Initials,
-    self.filterWords(ExtendedInitials),
-    self.filterWords(ExtendedInitials * Vowels),
-    self.filterWords(ExtendedInitials * Vowels * ExtendingConsonants),
-  ].map { |x| x.to_set }
+  Consonants = ExtendingConsonants + InitialConsonants
+  Neutral = ['']
 
   SyllableCounts = [
     1,
@@ -87,6 +49,53 @@ module Generator
     2,
     2,
   ]
+
+  def self.loadLexicon
+    consonantVowelFrequencies, finalConsonantFrequencies = Nahuatl.loadFrequencyData
+    initialConsonantFrequencies = {}
+    extendingConsonantFrequencies = {}
+    consonantVowelFrequencies.each do |segments, frequency|
+      consonant, vowel = segments
+      if InitialConsonants.include?(consonant)
+        initialConsonantFrequencies[segments] = frequency
+      end
+      if ExtendingConsonants.include?(consonant)
+        extendingConsonantFrequencies[segments] = frequency
+      end
+    end
+    initialSyllables = []
+    initialSyllablesScale = Nil::RandomScale.new
+    initialConsonantFrequencies.each do |segments, frequency|
+      consonant, vowel = segments
+      string = consonant + vowel
+      initialSyllablesScale.add(string, frequency)
+      initialSyllables << string
+    end
+    extendingSyllables = []
+    extendingSyllablesScale = Nil::RandomScale.new
+    extendingConsonantFrequencies.each do |segments, frequency|
+      consonant, vowel = segments
+      string = consonant + vowel
+      extendingSyllablesScale.add(string, frequency)
+      extendingSyllables << string
+    end
+    finalConsonants = []
+    finalConsonantsScale = Nil::RandomScale.new
+    finalConsonantFrequencies.each do |consonant, frequency|
+      finalConsonantsScale.add(consonant, frequency)
+      finalConsonants << consonant
+    end
+    #puts initialSyllables.inspect
+    #puts extendingSyllables.inspect
+    #puts finalConsonants.inspect
+    words = [
+      initialSyllables * Neutral,
+      initialSyllables * finalConsonants,
+      initialSyllables * extendingSyllables,
+      initialSyllables * extendingSyllables * finalConsonants,
+    ]
+    return [initialSyllablesScale, extendingSyllablesScale, finalConsonantsScale], words
+  end
 
   def self.totalWordCount
     count = 0
@@ -108,11 +117,19 @@ module Generator
   end
 
   def self.generateWord(priority)
-    while true
-      words = Words[priority].to_a
-      word = words[rand(words.size)]
-      return word
+    output = InitialSyllableScale.get
+    case priority
+    when 0
+    when 1
+      output += FinalConsonantsScale.get
+    when 2
+      output += ExtendingSyllablesScale.get
+    when 3
+      output += ExtendingSyllablesScale.get + FinalConsonantsScale.get
+    else
+      raise "Invalid priority: #{priority}"
     end
+    return output
   end
 
   def self.describe
@@ -153,6 +170,12 @@ module Generator
   end
 
   def self.generateUnusedWord(usedWords, priority)
+    attempts = 100
+    attempts.times do
+      word = self.generateWord(priority)
+      next if usedWords.include?(word)
+      return word
+    end
     unusedWords = Generator::Words[priority].reject do |word|
       usedWords.include?(word)
     end
@@ -162,4 +185,11 @@ module Generator
     word = unusedWords[rand(unusedWords.size)]
     return word
   end
+
+  Lexicon = self.loadLexicon
+  Scales = Lexicon[0]
+  InitialSyllableScale = Scales[0]
+  ExtendingSyllablesScale = Scales[1]
+  FinalConsonantsScale = Scales[2]
+  Words = Lexicon[1]
 end

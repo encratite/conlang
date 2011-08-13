@@ -44,7 +44,7 @@ lines.each do |line|
   lexicon << processedWord
 end
 
-isValid = lambda do |left, right|
+isValid = lambda do |left, right = ''|
   output = false
   lexicon.each do |word|
     Generator::Vowels.each do |vowel|
@@ -64,7 +64,7 @@ Generator::InitialConsonants.each do |a|
   Generator::ExtendingConsonants.each do |b|
     if !isValid.call(a, b)
       #puts "Invalid basic combination: #{a}, #{b}"
-      puts "['#{a}', '#{b}'],"
+      #puts "['#{a}', '#{b}'],"
     end
   end
 end
@@ -73,7 +73,41 @@ Generator::ExtendingConsonants.each do |a|
   Generator::ExtendingConsonants.each do |b|
     if !isValid.call(a, b)
       #puts "Invalid extended combination: #{a}, #{b}"
-      puts "['#{a}', '#{b}'],"
+      #puts "['#{a}', '#{b}'],"
     end
   end
+end
+
+(Generator::InitialConsonants + Generator::ExtendingConsonants).each do |a|
+  next if a == '?'
+  Generator::Vowels.each do |vowel|
+    isValid = false
+    lexicon.each do |word|
+      if word.index(a + vowel)
+        isValid = true
+        break
+      end
+    end
+    if !isValid
+      #puts "Invalid consonant/vowel combination: #{a}, #{vowel}"
+    end
+  end
+end
+
+vowelFrequency = {}
+sum = 0
+Generator::Vowels.each do |vowel|
+  vowelFrequency[vowel] = 0
+end
+lexicon.each do |word|
+  word.each_char do |char|
+    if Generator::Vowels.include?(char)
+      vowelFrequency[char] += 1
+      sum += 1
+    end
+  end
+end
+
+vowelFrequency.each do |vowel, frequency|
+  puts "#{vowel}: #{(frequency.to_f / sum * 100).round}"
 end
