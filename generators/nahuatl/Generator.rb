@@ -8,9 +8,8 @@ module Generator
   Vowels = [
     'a',
     'i',
-    'o',
     'e',
-    'E',
+    'o',
   ]
 
   InitialConsonants = [
@@ -20,16 +19,14 @@ module Generator
 
     'k_w',
 
-    #'b',
-    #'d',
-    #'g',
-
     'j',
     'w',
 
     'h',
 
     '?',
+
+    'tK',
   ]
 
   ExtendingConsonants = [
@@ -38,14 +35,11 @@ module Generator
 
     'l',
 
-    #'f',
     's',
     'S',
-    #'x',
 
     'tS',
     'ts',
-    'tK',
   ]
 
   Consonants = InitialConsonants + ExtendingConsonants

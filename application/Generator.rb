@@ -8,7 +8,6 @@ module Generator
   Vowels = [
     'a',
     'i',
-    'u',
     'e',
     'o',
   ]
@@ -18,14 +17,10 @@ module Generator
     't',
     'k',
 
-    'b',
-    'd',
-    'g',
+    'k_w',
 
     'j',
     'w',
-
-    'h',
 
     '?',
   ]
@@ -36,25 +31,60 @@ module Generator
 
     'l',
 
-    'f',
     's',
     'S',
-    'x',
+
+    'tS',
+    'ts',
+    'tK',
   ]
 
   Consonants = InitialConsonants + ExtendingConsonants
 
-  Initials = InitialConsonants * Vowels - ['ji', 'wu']
+  BannedClusters = [
+    ['j', 'tS'],
+    ['l', 'S'],
+    ['s', 'S'],
+    ['s', 'tS'],
+    ['tS', 'S'],
+    ['ts', 'S'],
+    ['ts', 'tS'],
+    ['ts', 'tK'],
+  ]
+
+  def self.filterWords(words)
+    output = []
+    words.each do |word|
+      isBanned = false
+      BannedClusters.each do |a, b|
+        Vowels.each do |vowel|
+          target = a + vowel + b
+          next if !word.index(target)
+          isBanned = true
+          break
+        end
+        break if isBanned
+      end
+      next if isBanned
+      output << word
+    end
+    return output
+  end
+
+  Initials = InitialConsonants * Vowels
+  ExtendedInitials = Initials * ExtendingConsonants
 
   Words = [
     Initials,
-    Initials * ExtendingConsonants,
-    Initials * ExtendingConsonants * Vowels,
+    self.filterWords(ExtendedInitials),
+    self.filterWords(ExtendedInitials * Vowels),
+    self.filterWords(ExtendedInitials * Vowels * ExtendingConsonants),
   ].map { |x| x.to_set }
 
   SyllableCounts = [
     1,
     1,
+    2,
     2,
   ]
 
@@ -95,7 +125,7 @@ module Generator
   def self.noise(syllableCount)
     generatedWords = []
     scale = Nil::RandomScale.new
-    weights = [1, 1, 1]
+    weights = [3, 2, 2, 1]
     Words.size.times do |i|
       scale.add(i, weights[i])
     end
