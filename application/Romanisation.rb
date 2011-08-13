@@ -1,13 +1,13 @@
 module Romanisation
   Replacements = {
     'a_"' => 'a',
-    'o_o' => 'o',
     'e_o' => 'e',
-    'tS' => 'c',
-    'ts' => 'z',
+    'k_w' => 'kw',
+    'tS' => 'tx',
+    'ts' => 'ts',
+    'tK' => 'tl',
     'S' => 'x',
     '?' => '',
-    '4' => 'r',
   }
 
   def self.romaniseXSAMPA(input)

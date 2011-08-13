@@ -10,6 +10,7 @@ require 'application/Generator'
 require 'application/Romanisation'
 require 'application/TranslationForm'
 require 'application/WordForm'
+require 'application/XSAMPAAdjustment'
 
 class LanguageHandler < BaseHandler
   ArgumentLetters = {
@@ -129,7 +130,7 @@ class LanguageHandler < BaseHandler
           'Function',
           'Romanisation',
           'IPA',
-          'X-SAMPA',
+          #'X-SAMPA',
           'Description',
           'Group',
           'Time added',
@@ -178,16 +179,16 @@ class LanguageHandler < BaseHandler
             end
           end
           writer.td do
-            ipa = XSAMPA.toIPA(xsampa)
+            ipa = XSAMPA.toIPA(XSAMPAAdjustment.adjust(xsampa))
             writer.span(class: 'ipa') do
               ipa
             end
           end
-          writer.td do
-            writer.span(class: 'xsampa') do
-              xsampa
-            end
-          end
+          #writer.td do
+          #  writer.span(class: 'xsampa') do
+          #    xsampa
+          #  end
+          #end
           writer.td do
             if description.empty?
               writer.p do
@@ -306,11 +307,12 @@ class LanguageHandler < BaseHandler
   def renderTranslation(xsampaTranslation, ipaTranslation)
     title = 'Translation'
     writer = getWriter
+    xsampaTranslation = XSAMPAAdjustment.adjust(xsampaTranslation)
     romanisedTranslation = Romanisation.romaniseXSAMPA(xsampaTranslation)
     targets = {
       'Romanised' => [romanisedTranslation, nil],
       'IPA' => [ipaTranslation, 'ipa'],
-      'X-SAMPA' => [xsampaTranslation, 'xsampa'],
+      #'X-SAMPA' => [xsampaTranslation, 'xsampa'],
     }
     targets.each do |description, translationData|
       translation, spanClass = translationData

@@ -91,7 +91,7 @@ module Generator
       initialConsonant, initialVowel = initialSyllable
       finalConsonants.each do |finalConsonant|
         pair = initialConsonant, finalConsonant
-        next if !consonantPairs.include?(pair)
+        next if initialConsonant != '?' && !consonantPairs.include?(pair)
         string = initialConsonant + initialVowel + finalConsonant
         complexMonosyllables << string
       end
@@ -248,5 +248,5 @@ module Generator
   InitialSyllableScale = Scales[0]
   ExtendingSyllablesScale = Scales[1]
   FinalConsonantsScale = Scales[2]
-  Words = LexiconData[1]
+  Words = LexiconData[2]
 end

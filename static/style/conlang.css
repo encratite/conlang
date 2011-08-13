@@ -136,6 +136,16 @@ span.priority1
     color: green;
 }
 
+span.priority2
+{
+    color: blue;
+}
+
+span.priority3
+{
+    color: orange;
+}
+
 span.unknownPriority
 {
     color: red;
