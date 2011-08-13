@@ -63,6 +63,13 @@ module Nahuatl
 
   def self.loadLexicon(path = 'data/nahuatl')
     lines = Nil.readLines(path)
+    if lines == nil
+      path = Nil.joinPaths('..', path)
+      lines = Nil.readLines(path)
+    end
+    if lines == nil
+      raise "Unable to join the lexicon data from #{path}"
+    end
     lexicon = []
     lines.each do |line|
       match = line.match(/.+? :: ([a-z]+)/)

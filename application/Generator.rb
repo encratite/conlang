@@ -85,9 +85,6 @@ module Generator
       finalConsonantsScale.add(consonant, frequency)
       finalConsonants << consonant
     end
-    #puts initialSyllables.inspect
-    #puts extendingSyllables.inspect
-    #puts finalConsonants.inspect
     simpleMonosyllables = initialSyllables.map { |a, b| a + b } * Neutral
     complexMonosyllables = []
     initialSyllables.each do |initialSyllable|
@@ -131,7 +128,9 @@ module Generator
       simpleBisyllables,
       complexBisyllables,
     ]
-    return [initialSyllablesScale, extendingSyllablesScale, finalConsonantsScale], words
+    syllables = initialSyllables, extendingSyllables, finalConsonants
+    scales = [initialSyllablesScale, extendingSyllablesScale, finalConsonantsScale]
+    return syllables, scales, words
   end
 
   def self.totalWordCount
@@ -223,10 +222,31 @@ module Generator
     return word
   end
 
-  Lexicon = self.loadLexicon
-  Scales = Lexicon[0]
+  def self.getSyllableStrings(input)
+    output = input.map do |consonant, vowel|
+      consonant + vowel
+    end
+    return output.sort
+  end
+
+  def self.printSyllables
+    separator = ', '
+    puts "Initial syllables (#{InitialSyllables.size}):"
+    puts self.getSyllableStrings(InitialSyllables).join(separator)
+    puts "Extending syllables (#{ExtendingSyllables.size}):"
+    puts self.getSyllableStrings(ExtendingSyllables).join(separator)
+    puts "Final consonants (#{FinalConsonants.size}):"
+    puts FinalConsonants.sort.join(separator)
+  end
+
+  LexiconData = self.loadLexicon
+  Syllables = LexiconData[0]
+  InitialSyllables = Syllables[0]
+  ExtendingSyllables = Syllables[1]
+  FinalConsonants = Syllables[2]
+  Scales = LexiconData[1]
   InitialSyllableScale = Scales[0]
   ExtendingSyllablesScale = Scales[1]
   FinalConsonantsScale = Scales[2]
-  Words = Lexicon[1]
+  Words = LexiconData[1]
 end
