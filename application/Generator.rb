@@ -117,7 +117,7 @@ module Generator
         finalConsonants.each do |finalConsonant|
           pair = extendingConsonant, finalConsonant
           next if !consonantPairs.include?(pair)
-          string = initialConsonant + initialVowel + extendingConsonant + extendingVowel
+          string = initialConsonant + initialVowel + extendingConsonant + extendingVowel + finalConsonant
           complexBisyllables << string
         end
       end
@@ -209,7 +209,7 @@ module Generator
     attempts = 100
     attempts.times do
       word = self.generateWord(priority)
-      next if usedWords.include?(word)
+      next if usedWords.include?(word) || !Words[priority].include?(word)
       return word
     end
     unusedWords = Generator::Words[priority].reject do |word|

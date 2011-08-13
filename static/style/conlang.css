@@ -122,7 +122,7 @@ span.ipa
     font-family: "Times New Roman", serif;
 }
 
-span.priority0, span.priority1
+span.priority0, span.priority1, span.priority2, span.priority3
 {
     font-weight: bold;
 }
