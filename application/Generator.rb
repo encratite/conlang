@@ -5,111 +5,58 @@ require 'nil/random'
 require 'application/Array'
 
 module Generator
-  HardVowels = [
+  Vowels = [
+    'a',
     'i',
-    'o',
-    'E',
-  ]
-
-  SoftVowels = [
     'u',
     'e',
-    'O',
-  ]
-
-  NeutralVowels = [
-    '@',
-    'a',
+    'o',
   ]
 
   Nasals = [
-    'm',
-    'n',
-    #'J',
   ]
 
-  VoicelessPlosives = [
-    'k',
+  InitialConsonants = [
     'p',
     't',
-  ]
+    'k',
 
-  VoicedPlosives = [
-    'g',
     'b',
     'd',
-  ]
+    'g',
 
-  Approximants = [
     'j',
     'w',
-    'l',
-    #'L',
-    #'r\\`',
+
+    'h',
+    's',
+
+    '?'
   ]
 
+  ExtendingConsonants = [
+    'm',
+    'n',
 
-  VoicelessFricatives = [
+    'l',
+
     'f',
-    's',
     'S',
     'x',
-    #'X',
-    'C',
-    'T',
   ]
 
-  VoicedFricatives = [
-    'v',
-    'z',
-    'Z',
-    'G',
-    #'R',
-    'j\\',
-    'D',
-  ]
+  Consonants = InitialConsonants + ExtendingConsonants
 
-  Taps = [
-    '4',
-  ]
-
-  Stops = [
-    '?',
-  ]
-
-  VoicelessAffricates = [
-    'tS',
-    'ts',
-  ]
-
-  VoicedAffricates = [
-    'dZ',
-    'dz',
-  ]
-
-  Vowels = HardVowels + SoftVowels + NeutralVowels
-  Plosives = VoicelessPlosives + VoicedPlosives
-  Fricatives = VoicelessFricatives + VoicedFricatives
-  Affricates = VoicelessAffricates + VoicedAffricates
-
-  Consonants = Nasals + Plosives + Approximants + Fricatives + Taps + Stops + Affricates
-
-  HardConsonants = VoicelessPlosives + VoicelessFricatives + VoicelessAffricates
-  SoftConsonants = VoicedPlosives + VoicelessPlosives + VoicedAffricates
-  NeutralConsonants = Nasals + Approximants + Taps + Stops
-
-  HardSyllables = HardConsonants * HardVowels
-  SoftSyllables = SoftConsonants * SoftVowels
-  NeutralSyllables = NeutralConsonants * NeutralVowels
-
-  BasicSyllables = HardSyllables + SoftSyllables
+  Initials = InitialConsonants * Vowels - ['ji', 'wu']
 
   Words = [
-    BasicSyllables,
-    BasicSyllables * NeutralSyllables,
+    Initials,
+    Initials * ExtendingConsonants,
+    Initials * ExtendingConsonants * Vowels,
   ].map { |x| x.to_set }
 
   SyllableCounts = [
+    1,
     1,
     2,
   ]
@@ -151,7 +98,7 @@ module Generator
   def self.noise(syllableCount)
     generatedWords = []
     scale = Nil::RandomScale.new
-    weights = [2, 1]
+    weights = [1, 1, 1]
     Words.size.times do |i|
       scale.add(i, weights[i])
     end

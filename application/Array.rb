@@ -10,4 +10,8 @@ class Array
     end
     return output
   end
+
+  def -(other)
+    return reject { |x| other.include?(x) }
+  end
 end
