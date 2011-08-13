@@ -51,7 +51,7 @@ module Generator
   ]
 
   def self.loadLexicon
-    consonantVowelFrequencies, finalConsonantFrequencies = Nahuatl.loadFrequencyData
+    consonantVowelFrequencies, finalConsonantFrequencies, consonantPairs = Nahuatl.loadLexiconData
     initialConsonantFrequencies = {}
     extendingConsonantFrequencies = {}
     consonantVowelFrequencies.each do |segments, frequency|
@@ -69,7 +69,7 @@ module Generator
       consonant, vowel = segments
       string = consonant + vowel
       initialSyllablesScale.add(string, frequency)
-      initialSyllables << string
+      initialSyllables << segments
     end
     extendingSyllables = []
     extendingSyllablesScale = Nil::RandomScale.new
@@ -77,7 +77,7 @@ module Generator
       consonant, vowel = segments
       string = consonant + vowel
       extendingSyllablesScale.add(string, frequency)
-      extendingSyllables << string
+      extendingSyllables << segments
     end
     finalConsonants = []
     finalConsonantsScale = Nil::RandomScale.new
@@ -88,11 +88,48 @@ module Generator
     #puts initialSyllables.inspect
     #puts extendingSyllables.inspect
     #puts finalConsonants.inspect
+    simpleMonosyllables = initialSyllables.map { |a, b| a + b } * Neutral
+    complexMonosyllables = []
+    initialSyllables.each do |initialSyllable|
+      initialConsonant, initialVowel = initialSyllable
+      finalConsonants.each do |finalConsonant|
+        pair = initialConsonant, finalConsonant
+        next if !consonantPairs.include?(pair)
+        string = initialConsonant + initialVowel + finalConsonant
+        complexMonosyllables << string
+      end
+    end
+    simpleBisyllables = []
+    initialSyllables.each do |initialSyllable|
+      initialConsonant, initialVowel = initialSyllable
+      extendingSyllables.each do |extendingSyllable|
+        extendingConsonant, extendingVowel = extendingSyllable
+        pair = initialConsonant, extendingConsonant
+        next if initialConsonant != '?' && !consonantPairs.include?(pair)
+        string = initialConsonant + initialVowel + extendingConsonant + extendingVowel
+        simpleBisyllables << string
+      end
+    end
+    complexBisyllables = []
+    initialSyllables.each do |initialSyllable|
+      initialConsonant, initialVowel = initialSyllable
+      extendingSyllables.each do |extendingSyllable|
+        extendingConsonant, extendingVowel = extendingSyllable
+        pair = initialConsonant, extendingConsonant
+        next if initialConsonant != '?' && !consonantPairs.include?(pair)
+        finalConsonants.each do |finalConsonant|
+          pair = extendingConsonant, finalConsonant
+          next if !consonantPairs.include?(pair)
+          string = initialConsonant + initialVowel + extendingConsonant + extendingVowel
+          complexBisyllables << string
+        end
+      end
+    end
     words = [
-      initialSyllables * Neutral,
-      initialSyllables * finalConsonants,
-      initialSyllables * extendingSyllables,
-      initialSyllables * extendingSyllables * finalConsonants,
+      simpleMonosyllables,
+      complexMonosyllables,
+      simpleBisyllables,
+      complexBisyllables,
     ]
     return [initialSyllablesScale, extendingSyllablesScale, finalConsonantsScale], words
   end

@@ -1,3 +1,5 @@
+require 'set'
+
 require 'nil/file'
 
 require 'application/Generator'
@@ -90,9 +92,10 @@ module Nahuatl
     return lexicon
   end
 
-  def self.loadFrequencyData
+  def self.loadLexiconData
     consonantVowelFrequencies = {}
     finalConsonantFrequencies = {}
+    consonantPairs = Set.new
     lexicon = self.loadLexicon()
     lexicon.each do |segment|
       offset = 0
@@ -107,25 +110,34 @@ module Nahuatl
             consonantVowelFrequencies[pair] = 0
           end
         end
-        vowel = segment[0]
-        if Generator::Vowels.include?(vowel)
-          pair = ['?', vowel]
-          if consonantVowelFrequencies[pair]
-            consonantVowelFrequencies[pair] += 1
-          else
-            consonantVowelFrequencies[pair] = 0
-          end
+      end
+      (segment.size - 2).times do |i|
+        consonant1 = segment[i]
+        vowel = segment[i + 1]
+        consonant2 = segment[i + 2]
+        if Generator::Consonants.include?(consonant1) && Generator::Vowels.include?(vowel) && Generator::Consonants.include?(consonant2)
+          pair = consonant1, consonant2
+          consonantPairs.add(pair)
         end
-        consonant = segment[-1]
-        if Generator::ExtendingConsonants.include?(consonant)
-          if finalConsonantFrequencies[consonant]
-            finalConsonantFrequencies[consonant] += 1
-          else
-            finalConsonantFrequencies[consonant] = 0
-          end
+      end
+      vowel = segment[0]
+      if Generator::Vowels.include?(vowel)
+        pair = ['?', vowel]
+        if consonantVowelFrequencies[pair]
+          consonantVowelFrequencies[pair] += 1
+        else
+          consonantVowelFrequencies[pair] = 0
+        end
+      end
+      consonant = segment[-1]
+      if Generator::ExtendingConsonants.include?(consonant)
+        if finalConsonantFrequencies[consonant]
+          finalConsonantFrequencies[consonant] += 1
+        else
+          finalConsonantFrequencies[consonant] = 0
         end
       end
     end
-    return consonantVowelFrequencies, finalConsonantFrequencies
+    return consonantVowelFrequencies, finalConsonantFrequencies, consonantPairs
   end
 end
