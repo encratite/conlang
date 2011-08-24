@@ -2,20 +2,27 @@ $:.concat ['.', '..']
 
 require 'application/Generator'
 
+require 'XSAMPA'
+
 count = 7
 lines = 4
+useIPA = false
 
-if ARGV.size == 1
-  priority = ARGV.first.to_i
-
+if ARGV.size > 0
   words = []
   count.times do
     words << Generator.generateWord(priority)
   end
 
-  puts words.join(' ')
+  output = words.join(' ')
 else
+  output = []
   lines.times do
-    puts Generator.noise(count)
+    output << Generator.noise(count)
   end
+  output = output.join("\n")
 end
+if useIPA
+  output = XSAMPA.toIPA(output)
+end
+puts output
